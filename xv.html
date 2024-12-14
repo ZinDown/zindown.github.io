@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrape Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #28a745;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            display: none; /* Hide title */
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .container {
+            width: 90%; /* Adjust width for mobile */
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Fix grid layout for mobile devices */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Adjust grid item size for small screens */
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .grid-item {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        /* Results count color green */
+        .results-count {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+            margin-top: 30px;
+        }
+
+        .footer a {
+            color: #28a745;
+            text-decoration: none;
+        }
+
+        /* Modal/Dialog Box */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .modal .button-group {
+            justify-content: space-between;
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal button:hover {
+            background-color: #218838;
+        }
+
+        /* Title in grid view to stay in one line */
+        .grid-item p {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <label for="searchInput">Enter Search Query (e.g., myanmar):</label>
+    <input type="text" id="searchInput" placeholder="Enter search term (e.g., myanmar)">
+    
+    <div class="button-group">
+        <button id="scrapeButton">Scrape Data</button>
+        <button id="copyButton" style="display: none;">Copy JSON</button>
+    </div>
+
+<p id="resultsCount" class="results-count">
+    <span style="color: black;">Results:</span> 
+    <span id="resultsCountNumber" style="color: #28a745;">(0) Videos</span>
+</p>
+
+
+    <div id="gridView" class="grid"></div>
+
+</div>
+
+<div class="footer">
+    <p>Created with ❤️ by <a href="#">KoNyiJR</a></p>
+</div>
+
+<!-- Modal for Image Link -->
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <h3>Image Details</h3>
+        <img id="modalImage" src="" alt="Image" style="width: 100%; height: auto; margin-bottom: 15px;">
+        
+        <!-- Button Group in Modal -->
+        <div class="button-group">
+            <button id="copyImageLinkButton">Copy Image Link</button>
+            <button id="closeModalButton">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('scrapeButton').addEventListener('click', () => {
+        const searchQuery = document.getElementById('searchInput').value.trim();
+
+        if (!searchQuery) {
+            alert("Please enter a search term.");
+            return;
+        }
+
+        const numberOfPages = 10;
+        const apyar = [];
+
+        const scrapePage = (pageNum) => {
+            const url = `https://www.xvideos.com/?k=${searchQuery}/&p=${pageNum}`;
+            const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+
+            fetch(proxyUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data.contents, 'text/html');
+                    const thumbBlocks = doc.querySelectorAll('.mozaique .thumb-block');
+
+                    thumbBlocks.forEach(block => {
+                        const title = block.querySelector('p a') ? block.querySelector('p a').title : '';
+                        const image = block.querySelector('img') ? block.querySelector('img').getAttribute('data-src') : '';
+                        const link = block.querySelector('a') ? 'https://www.xvideos.com' + block.querySelector('a').getAttribute('href') : '';
+
+                        if (title && image && link) {
+                            apyar.push({ title, image, link, type: 'x' });
+                        }
+                    });
+
+                    if (pageNum === numberOfPages) {
+                        // Display grid view
+                        displayGrid(apyar);
+
+                        // Update results count
+                        document.getElementById('resultsCount').innerHTML = `
+    <span style="color: black;">Results:</span> 
+    <span id="resultsCountNumber" style="color: #28a745;">(${apyar.length}) Videos</span>
+`;
+
+
+                        // Show the "Copy JSON" button
+                        document.getElementById('copyButton').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data for page ' + pageNum, error);
+                    if (pageNum === numberOfPages) {
+                        document.getElementById('gridView').innerHTML = 'Error fetching data.';
+                    }
+                });
+        };
+
+        // Scrape the pages in sequence (1, 2, 3, etc.)
+        for (let i = 1; i <= numberOfPages; i++) {
+            scrapePage(i);
+        }
+
+        // Copy JSON to clipboard
+        document.getElementById('copyButton').addEventListener('click', () => {
+            const resultJSON = JSON.stringify({ apyar }, null, 9);
+            navigator.clipboard.writeText(resultJSON)
+                .then(() => alert('JSON copied to clipboard!'))
+                .catch(err => alert('Failed to copy JSON: ' + err));
+        });
+    });
+
+    // Display the scraped data in a grid
+    const displayGrid = (data) => {
+        const gridView = document.getElementById('gridView');
+        gridView.innerHTML = ''; // Clear existing content
+
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'grid-item';
+            div.innerHTML = `
+                <img src="${item.image}" alt="${item.title}">
+                <p>${item.title}</p>
+            `;
+            div.addEventListener('click', () => showModal(item));
+            gridView.appendChild(div);
+        });
+    };
+
+    // Show modal with image and link
+    const showModal = (item) => {
+        document.getElementById('modalImage').src = item.image;
+        document.getElementById('imageModal').style.display = 'block';
+
+        document.getElementById('copyImageLinkButton').onclick = () => {
+            navigator.clipboard.writeText(item.image)
+                .then(() => alert('Image link copied to clipboard!'))
+                .catch(err => alert('Failed to copy image link: ' + err));
+        };
+
+        document.getElementById('closeModalButton').onclick = () => {
+            document.getElementById('imageModal').style.display = 'none';
+        };
+    };
+</script>
+
+</body>
+</html>
