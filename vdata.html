@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Metadata Scraper</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e0f7fa;
+      padding: 20px;
+    }
+    h1 {
+      color: #00796b;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    input, button {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 5px;
+      border: 1px solid #00796b;
+    }
+    button {
+      background-color: #00796b;
+      color: white;
+      cursor: pointer;
+      width: auto;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    #buttonGroup {
+      display: flex;
+      justify-content: space-between;
+    }
+    #buttonGroup button {
+      width: 48%;
+    }
+    #jsonOutput {
+      margin-top: 20px;
+      background-color: #ffffff;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #00796b;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    #status {
+      font-weight: bold;
+      text-align: center;
+    }
+    .yellow {
+      color: #fbc02d; /* Yellow for progress */
+    }
+    .green {
+      color: #388e3c; /* Green for success */
+    }
+    .container {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Video Meta Data Scraper</h1>
+
+    <label for="videoUrl" id="status">State:</label>
+    <input type="url" id="videoUrl" placeholder="https://www.xnxx or xvideo.com/videoid " required>
+
+    <div id="buttonGroup">
+      <button onclick="fetchVideoMetadata()">Meta Scrape</button>
+      <button onclick="copyJsonToClipboard()">Copy JSON</button>
+    </div>
+
+    <div id="jsonOutput"></div>
+  </div>
+
+  <script>
+    let scrapedData = [];
+
+    async function fetchVideoMetadata() {
+      const url = document.getElementById('videoUrl').value;
+      if (!url) {
+        alert('Please enter a valid URL.');
+        return;
+      }
+
+      // Show "Please wait" message in yellow color
+      document.getElementById('status').textContent = 'Scraping in progress...';
+      document.getElementById('status').className = 'yellow';
+      
+      try {
+        // Simulate fetching data from the provided URL
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        const pageContent = data.contents;
+
+        const titleMatch = pageContent.match(/html5player\.setVideoTitle\(['"](.*?)['"]\)/);
+        const imageMatch = pageContent.match(/html5player\.setThumbUrl\(['"](.*?)['"]\)/);
+
+        const newData = {
+          title: titleMatch ? titleMatch[1] : 'Unknown Title',
+          image: imageMatch ? imageMatch[1] : 'No Image',
+          link: url,
+          type: 'x'
+        };
+
+        // Add the new data to the JSON array at the top
+        scrapedData.unshift(newData);
+
+        // Update the status to show success in green
+        document.getElementById('status').textContent = 'Scraping successful!';
+        document.getElementById('status').className = 'green';
+
+        // Display the updated JSON
+        document.getElementById('jsonOutput').textContent = JSON.stringify({ apyar: scrapedData }, null, 2);
+
+        // Clear the input field after successful scrape
+        document.getElementById('videoUrl').value = '';
+
+      } catch (error) {
+        alert('Error fetching video metadata.');
+        console.error(error);
+
+        // Update the status to show failure
+        document.getElementById('status').textContent = 'Scraping failed. Please try again.';
+        document.getElementById('status').className = '';
+      }
+    }
+
+    function copyJsonToClipboard() {
+      const jsonOutput = document.getElementById('jsonOutput').textContent;
+      if (!jsonOutput) {
+        alert('No JSON data available to copy.');
+        return;
+      }
+
+      navigator.clipboard.writeText(jsonOutput).then(() => {
+        alert('JSON copied to clipboard!');
+      }).catch(err => {
+        console.error('Error copying JSON to clipboard: ', err);
+      });
+    }
+  </script>
+</body>
+</html>
