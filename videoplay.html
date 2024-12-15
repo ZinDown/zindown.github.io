@@ -51,35 +51,14 @@
 
         /* Video Player Container */
         #videoContainer {
-            position: relative;
+            display: none;
             width: 100%;
             max-width: 800px;
         }
 
-        #controls {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            display: flex;
-            justify-content: space-between;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        #controls button {
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 15px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        #controls button:hover {
-            background: #218838;
+        video {
+            width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -91,13 +70,8 @@
 </div>
 
 <!-- Video Container -->
-<div id="videoContainer" style="display: none;">
-    <video id="videoPlayer" style="width: 100%; height: auto;" controls></video>
-    <div id="controls">
-        <button id="previous10">-10s</button>
-        <button id="playPause">Play</button>
-        <button id="next10">+10s</button>
-    </div>
+<div id="videoContainer">
+    <video id="videoPlayer" controls autoplay></video>
 </div>
 
 <script>
@@ -106,13 +80,10 @@
     const videoPlayer = document.getElementById('videoPlayer');
     const loadingOverlay = document.getElementById('loadingOverlay');
     const videoContainer = document.getElementById('videoContainer');
-    const playPauseButton = document.getElementById('playPause');
-    const previous10Button = document.getElementById('previous10');
-    const next10Button = document.getElementById('next10');
 
     if (!scrapeLink) {
         alert('No link provided.');
-        window.location.href = 'index.html'; // Redirect to the main page
+        window.location.href = 'online.html'; // Redirect to the fallback page
     } else {
         scrapeVideoLink(scrapeLink);
     }
@@ -132,8 +103,8 @@
                 throw new Error('Video link not found.');
             }
         } catch (error) {
-            alert('Failed to scrape the video link: ' + error.message);
-            window.location.href = 'index.html'; // Redirect if scrape fails
+            alert('Redirecting to online page: ' + error.message);
+            window.location.href = 'online.html'; // Redirect to the fallback page
         }
     }
 
@@ -143,33 +114,11 @@
         videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
             videoContainer.style.display = 'block';
-            videoPlayer.play();
         });
 
         videoPlayer.addEventListener('error', () => {
             alert('Failed to load the video.');
-            window.location.href = 'index.html';
-        });
-
-        // Play/Pause functionality
-        playPauseButton.addEventListener('click', () => {
-            if (videoPlayer.paused) {
-                videoPlayer.play();
-                playPauseButton.textContent = 'Pause';
-            } else {
-                videoPlayer.pause();
-                playPauseButton.textContent = 'Play';
-            }
-        });
-
-        // Skip 10 seconds back
-        previous10Button.addEventListener('click', () => {
-            videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
-        });
-
-        // Skip 10 seconds forward
-        next10Button.addEventListener('click', () => {
-            videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+            window.location.href = 'online.html';
         });
     }
 </script>
