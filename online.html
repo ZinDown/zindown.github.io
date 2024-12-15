@@ -1,74 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video List</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            width: 100%;
-            padding: 10px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-        .grid-item {
-            background-color: white;
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-        }
-        .grid-item img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-        .grid-item p {
-            margin: 5px 0 0;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slideshow and Grid View</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+   /* Slideshow styles */
+    .slideshow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right:0;
+      width: 100%;
+      height: 260px; /* Fixed height for slideshow */
+      overflow: hidden;
+      padding-top: 14px; 
+   
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+    }
+
+    .slide {
+      display: none;
+      width: 100%;
+      height: 100%; /* Ensure slides fill the container */
+      cursor: pointer;
+      padding: 2px; /* Added padding to the images in the slideshow */
+      transition: transform 1s ease-in-out;
+    }
+
+    .active {
+      display: block;
+      transform: translateY(0);
+    }
+
+    .slideshow-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* Make images cover the container */
+      border-radius: 10px;
+    }
+
+    /* Grid view styles */
+    .container {
+      width: 100%;
+      padding: 10px;
+      margin-top: 225px; /* Adjusted for the fixed slideshow height */
+      max-width: 1200px;
+      box-sizing: border-box;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 10px;
+      max-height: 80vh;
+      overflow-y: auto; /* Allows scrolling in the grid */
+    }
+
+    .grid-item {
+      background-color: white;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .grid-item p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Responsive Design for Android phones */
+    @media screen and (max-width: 600px) {
+      .slideshow-container {
+        height: 200px;
+      }
+
+      .grid-item img {
+        height: 100px;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adjust grid columns for smaller screens */
+        gap: 5px; /* Reduce gap between items on small screens */
+      }
+
+      .container {
+        padding: 5px; /* Reduce container padding on small screens */
+      }
+    }
+
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 style="text-align:center;">Video Grid</h1>
-        <div id="gridView" class="grid"></div>
-    </div>
 
-    <script>
-        // Fetch JSON and display data in grid view
-        fetch('https://raw.githubusercontent.com/amemehtoon/VideoV4/refs/heads/main/data.json')
-            .then(response => response.json())
-            .then(data => {
-                const gridView = document.getElementById('gridView');
-                data.apyar.forEach(item => {
-                    const div = document.createElement('div');
-                    div.className = 'grid-item';
-                    div.innerHTML = `
-                        <img src="${item.image}" alt="${item.title}">
-                        <p>${item.title}</p>
-                    `;
-                    div.addEventListener('click', () => {
-                        window.location.href = `/second.html?link=${encodeURIComponent(item.link)}`;
-                    });
-                    gridView.appendChild(div);
-                });
-            })
-            .catch(error => console.error('Error fetching JSON:', error));
-    </script>
+  <!-- Slideshow Section -->
+  <div class="slideshow-container" id="slideshow">
+    <!-- Slideshow images will be inserted here -->
+  </div>
+
+  <!-- Grid View Section -->
+  <div class="container">
+    <div id="gridView" class="grid"></div>
+  </div>
+
+  <script>
+    // Fetch JSON for slideshow
+    fetch('https://raw.githubusercontent.com/ZinDown/new/main/Sponner.json')
+      .then(response => response.json())
+      .then(data => {
+        const slideshowContainer = document.getElementById("slideshow");
+        let currentSlide = 0;
+
+        // Check if the data contains the "apyar" array for slideshow
+        const imagesData = data.apyar || [];
+
+        function loadSlides() {
+          imagesData.forEach((item, index) => {
+            const img = document.createElement("img");
+            img.classList.add("slide");
+            if (index === 0) img.classList.add("active");
+            img.src = item.image;
+            img.alt = item.title;
+            img.onclick = () => window.open(item.link, "_blank");
+            slideshowContainer.appendChild(img);
+          });
+        }
+
+        // Navigation function to switch slides
+        function showSlide(index) {
+          const slides = document.querySelectorAll('.slide');
+          if (index >= slides.length) currentSlide = 0;
+          if (index < 0) currentSlide = slides.length - 1;
+
+          slides.forEach((slide, i) => {
+            slide.classList.remove('active');
+            if (i === currentSlide) slide.classList.add('active');
+          });
+        }
+
+        // Auto slide change every 3 seconds
+        setInterval(() => {
+          currentSlide++;
+          showSlide(currentSlide);
+        }, 3000);
+
+        // Load slides initially
+        loadSlides();
+      })
+      .catch(error => console.error('Error loading JSON for slideshow:', error));
+
+    // Fetch JSON for grid view
+    fetch('https://raw.githubusercontent.com/amemehtoon/VideoV4/refs/heads/main/data.json')
+      .then(response => response.json())
+      .then(data => {
+        const gridView = document.getElementById('gridView');
+        data.apyar.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'grid-item';
+          div.innerHTML = `
+            <img src="${item.image}" alt="${item.title}">
+            <p>${item.title}</p>
+          `;
+          div.addEventListener('click', () => {
+            window.location.href = `/second.html?link=${encodeURIComponent(item.link)}`;
+          });
+          gridView.appendChild(div);
+        });
+      })
+      .catch(error => console.error('Error fetching JSON for grid view:', error));
+  </script>
+
 </body>
 </html>
