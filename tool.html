@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Slider with Buttons</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #1e1e1e;
+      color: #00ff00;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .container {
+      background-color: #2c2c2c;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      width: 80%;
+      max-width: 700px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+      z-index: 2;
+    }
+    .slider {
+      display: flex;
+      overflow: hidden;
+      margin-bottom: 20px;
+      width: 130%;
+      border-radius: 10px;
+    }
+    .slider img {
+      width: 100%;
+      height: auto;
+      transition: transform 1s ease;
+      display: none; /* Hide images by default */
+    }
+    .slider img.active {
+      display: block; /* Only show the active image */
+    }
+    .image-box {
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      justify-content: center;
+    }
+    .buttons button {
+      padding: 15px 30px;
+      background-color: #333;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+      transition: background-color 0.3s, transform 0.3s;
+      width: 100%;
+    }
+    .buttons button:hover {
+      background-color: #00ff00;
+      color: #333;
+      transform: scale(1.05);
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #777;
+    }
+    /* Snowfall Effect */
+    .snowfall {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 1;
+      font-size: 30px;
+      animation: snowfall 10s linear infinite;
+    }
+    .snowfall span {
+      position: absolute;
+      animation: fall 10s linear infinite;
+    }
+    @keyframes snowfall {
+      from {
+        top: -50px;
+      }
+      to {
+        top: 100%;
+      }
+    }
+    @keyframes fall {
+      0% { top: -50px; }
+      100% { top: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="snowfall">
+    <!-- Snowflake emojis -->
+    <span style="left: 5%; animation-delay: 0s;">❄</span>
+    <span style="left: 10%; animation-delay: 1s;">🌨</span>
+    <span style="left: 15%; animation-delay: 2s;">☃</span>
+    <span style="left: 20%; animation-delay: 3s;">❄</span>
+    <span style="left: 25%; animation-delay: 4s;">⛄</span>
+    <span style="left: 30%; animation-delay: 5s;">🌨</span>
+    <span style="left: 35%; animation-delay: 6s;">❄</span>
+    <span style="left: 40%; animation-delay: 7s;">☃</span>
+    <span style="left: 45%; animation-delay: 8s;">❄</span>
+    <span style="left: 50%; animation-delay: 9s;">⛄</span>
+    <span style="left: 55%; animation-delay: 10s;">🌨</span>
+    <span style="left: 60%; animation-delay: 11s;">❄</span>
+    <span style="left: 65%; animation-delay: 12s;">☃</span>
+    <span style="left: 70%; animation-delay: 13s;">❄</span>
+    <span style="left: 75%; animation-delay: 14s;">⛄</span>
+    <span style="left: 80%; animation-delay: 15s;">🌨</span>
+    <span style="left: 85%; animation-delay: 16s;">❄</span>
+    <span style="left: 90%; animation-delay: 17s;">☃</span>
+    <span style="left: 95%; animation-delay: 18s;">❄</span>
+    <!-- More snowflakes (over 30) -->
+    <span style="left: 5%; animation-delay: 19s;">🌨</span>
+    <span style="left: 10%; animation-delay: 20s;">❄</span>
+    <span style="left: 15%; animation-delay: 21s;">⛄</span>
+    <span style="left: 20%; animation-delay: 22s;">🌨</span>
+    <span style="left: 25%; animation-delay: 23s;">❄</span>
+    <span style="left: 30%; animation-delay: 24s;">☃</span>
+    <span style="left: 35%; animation-delay: 25s;">❄</span>
+    <span style="left: 40%; animation-delay: 26s;">⛄</span>
+    <span style="left: 45%; animation-delay: 27s;">🌨</span>
+    <span style="left: 50%; animation-delay: 28s;">❄</span>
+    <span style="left: 55%; animation-delay: 29s;">☃</span>
+    <span style="left: 60%; animation-delay: 30s;">❄</span>
+    <span style="left: 65%; animation-delay: 31s;">⛄</span>
+    <span style="left: 70%; animation-delay: 32s;">🌨</span>
+    <span style="left: 75%; animation-delay: 33s;">❄</span>
+    <span style="left: 80%; animation-delay: 34s;">☃</span>
+  </div>
+
+  <div class="container">
+  
+
+    <div class="buttons">
+      <button onclick="window.location.href='/xv.html'">X Video Scrape</button>
+      <button onclick="window.location.href='/xn.html'">XNXX Video Scrape</button>
+      <button onclick="window.location.href='/vdata.html'"> XVideo Add JSON</button>
+      <button onclick="window.location.href='/imgur.html'"> Image Uploader </button>
+    </div>
+
+    <div class="footer">
+      <p>Created By KoNyiJR</p>
+    </div>
+  </div>
+
+  <script>
+    let currentIndex = 0;
+    const images = document.querySelectorAll('.slider img');
+    setInterval(() => {
+      images[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % images.length;
+      images[currentIndex].classList.add('active');
+    }, 3000);
+  </script>
+</body>
+</html>
