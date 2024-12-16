@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> All Kar Loe Kar </title>
+  <title>All Kar Loe Kar</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,13 +15,21 @@
       min-height: 100vh;
     }
 
+    h1 {
+      text-align: center;
+      margin: 0;
+      padding: 20px 0;
+      color: white;
+      background-color: green; /* Set background color to green */
+    }
+
     .container {
-      flex: 1; /* Take up remaining space below header */
+      flex: 1;
       padding: 10px;
       width: 100%;
       max-width: 1200px;
       box-sizing: border-box;
-      overflow-y: auto; /* Enable scrolling for content overflow */
+      overflow-y: auto;
     }
 
     .grid {
@@ -54,7 +62,6 @@
       text-overflow: ellipsis;
     }
 
-    /* Responsive Design for Android phones */
     @media screen and (max-width: 600px) {
       .grid {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -73,14 +80,20 @@
 </head>
 <body>
 
+  <!-- Title -->
+  <h1>All Kar Loe Kar</h1>
+
   <!-- Grid View Section -->
   <div class="container">
     <div id="gridView" class="grid"></div>
   </div>
 
   <script>
+    // Hidden JSON link
+    const dataUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2FtZW1laHRvb24vVmlkZW9WNC9yZWZzL2hlYWRzL21haW4vZGF0YS5qc29u');
+
     // Fetch JSON for grid view
-    fetch('https://raw.githubusercontent.com/amemehtoon/VideoV4/refs/heads/main/data.json')
+    fetch(dataUrl)
       .then(response => response.json())
       .then(data => {
         const gridView = document.getElementById('gridView');
