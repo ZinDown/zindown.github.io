@@ -98,8 +98,16 @@
                             <p>${item.title}</p>
                         `;
                         div.addEventListener('click', () => {
-                            window.location.href = `/videoplay.html?link=${encodeURIComponent(item.link)}`;
-                        });
+                        if (item.type === 'join') {
+                            window.location.href = item.link; // Redirect to item link
+                        } else if (item.type === 'web') {
+                            window.location.href = item.link; // Redirect to item link
+                        } else if (item.type === 'x') {
+                            window.location.href = `/videoplay.html?link=${encodeURIComponent(item.link)}`; // Redirect to videoplay.html
+                        } else {
+                            alert('Unknown type!'); // Handle unknown types
+                        }
+                    });
                         gridView.appendChild(div);
                     });
                 })
