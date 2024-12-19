@@ -49,16 +49,18 @@
             }
         }
 
-        /* Video Player Container */
-        #videoContainer {
+        /* Iframe Container */
+        #iframeContainer {
             display: none;
             width: 100%;
             max-width: 800px;
+            height: 450px;
         }
 
-        video {
+        iframe {
             width: 100%;
-            height: auto;
+            height: 100%;
+            border: none;
         }
     </style>
 </head>
@@ -69,17 +71,17 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Video Container -->
-<div id="videoContainer">
-    <video id="videoPlayer" controls autoplay></video>
+<!-- Iframe Container -->
+<div id="iframeContainer">
+    <iframe id="videoIframe" frameborder="0" allowfullscreen></iframe>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
-    const scrapeLink = urlParams.get('url');  // Corrected the parameter name to 'scrapeLink'
-    const videoPlayer = document.getElementById('videoPlayer');
+    const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
+    const iframeContainer = document.getElementById('iframeContainer');
+    const videoIframe = document.getElementById('videoIframe');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const videoContainer = document.getElementById('videoContainer');
 
     if (!scrapeLink) {
         alert('No link provided.');
@@ -96,30 +98,29 @@
 
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
-            const iframeElement = doc.querySelector('iframe[src*="maynoe.com/wp-content"]');  // Extract the iframe src link
+            const iframeElement = doc.querySelector('iframe[src*="maynoe.com/wp-content"]');  // Extract iframe link
 
             if (iframeElement) {
                 const videoUrl = iframeElement.getAttribute('src');
-                loadVideo(videoUrl);
+                loadIframe(videoUrl);
             } else {
-                throw new Error('Video link not found.');
+                throw new Error('Iframe link not found.');
             }
         } catch (error) {
             alert('Error: ' + error.message);
         }
     }
 
-    function loadVideo(videoUrl) {
-        videoPlayer.src = videoUrl;
+    function loadIframe(videoUrl) {
+        videoIframe.src = videoUrl;
 
-        videoPlayer.addEventListener('loadeddata', () => {
+        videoIframe.addEventListener('load', () => {
             loadingOverlay.style.display = 'none';
-            videoContainer.style.display = 'block';
+            iframeContainer.style.display = 'block';
         });
 
-        videoPlayer.addEventListener('error', () => {
-            alert('Failed to load the video.');
-            window.location.href = 'online.html';  // Redirect if video fails to load
+        videoIframe.addEventListener('error', () => {
+            alert('Failed to load the video iframe.');
         });
     }
 </script>
