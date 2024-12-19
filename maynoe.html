@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       background-color: #2e7d32;
       color: white;
-      margin: 0;
+      margin: 5;
       padding: 0;
       display: flex;
       justify-content: center;
@@ -20,7 +20,7 @@
       width: 800px;
       background: #e0f7e9;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: 15px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       text-align: center;
       color: #333;
@@ -58,7 +58,7 @@
       color: white;
       padding: 10px 20px;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
     }
@@ -70,10 +70,10 @@
     }
     textarea {
       width: 100%;
-      height: 200px;
-      padding: 10px;
+      height: 220px;
+      padding: 0px;
       border: 2px solid #2e7d32;
-      border-radius: 4px;
+      border-radius: 8px;
       font-family: monospace;
       font-size: 14px;
       background: #f7fff7;
@@ -83,10 +83,16 @@
 </head>
 <body>
   <div class="container">
-    <h1> MayNoe.com Scrape Data</h1>
+    <h1>MayNoe.com Scrape Data</h1>
     <div class="input-group">
-      <label for="page-count">Number of Pages:</label>
-      <input type="number" id="page-count" min="1" max="20" value="10">
+      <label for="page-count-start">Start of Pages:</label>
+      <input type="number" id="page-count-start" min="1" max="1000" value="1">
+     </div>
+     
+         <div class="input-group">
+ <label for="page-count-end">End of  Pages  :</label>
+      <input type="number" id="page-count-end" min="1" max="1000" value="10">
+      	
     </div>
     <div class="button-group">
       <button onclick="scrapeMultiplePages()">Scrape Data</button>
@@ -134,11 +140,12 @@
     }
 
     async function scrapeMultiplePages() {
-      const pageCount = parseInt(document.getElementById('page-count').value, 10) || 10;
+      const startPage = parseInt(document.getElementById('page-count-start').value, 10) || 1;
+      const endPage = parseInt(document.getElementById('page-count-end').value, 10) || 10;
       const baseUrl = 'https://maynoe.com/page/';
       const allData = [];
 
-      for (let i = 1; i <= pageCount; i++) {
+      for (let i = startPage; i <= endPage; i++) {
         const pageUrl = `${baseUrl}${i}/`;
         console.log(`Scraping: ${pageUrl}`);
         const pageData = await scrapePage(pageUrl);
