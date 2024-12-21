@@ -50,17 +50,16 @@
         }
 
         /* Video Container */
-        #iframeContainer {
+        #videoContainer {
             display: none;
             width: 100%;
             max-width: 800px;
-            height: 450px;
+            height: auto;
         }
 
-        iframe {
+        video {
             width: 100%;
-            height: 100%;
-            border: none;
+            height: auto;
         }
     </style>
 </head>
@@ -71,50 +70,58 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Iframe Container -->
-<div id="iframeContainer">
-    <iframe id="videoIframe"></iframe>
+<!-- Video Player Container -->
+<div id="videoContainer">
+    <video id="videoPlayer" controls autoplay></video>
 </div>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mediafireUrl = urlParams.get('url');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const iframeContainer = document.getElementById('iframeContainer');
-    const videoIframe = document.getElementById('videoIframe');
+    const videoContainer = document.getElementById('videoContainer');
+    const videoPlayer = document.getElementById('videoPlayer');
 
     if (!mediafireUrl) {
         alert('No link provided.');
-       // window.location.href = 'online.html'; // Redirect to fallback page
+        // Redirect to fallback page
     } else {
         getDirectLink(mediafireUrl);
     }
 
     async function getDirectLink(link) {
         try {
+            // Use AllOrigins or another proxy to fetch page content
             const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`);
-            const pageContent = await response.text();
+            const data = await response.json();
+            const pageContent = data.contents; // Extract the HTML content
 
-            // Extract direct video URL
-            const videoMatch = pageContent.match(/href="([^"]+)"[^>]*>Download/);
+            // Extract the direct video URL using updated regex
+            const videoMatch = pageContent.match(/<a[^>]+aria-label="Download file"[^>]+href="([^"]+)"/);
             if (videoMatch && videoMatch[1]) {
-                const directVideoUrl = videoMatch[1];
-                loadIframe(directVideoUrl);
+                const directVideoUrl = "https:" + videoMatch[1]; // Add "https:" if the URL is relative
+                loadVideo(directVideoUrl);
             } else {
                 throw new Error('Direct video link not found.');
             }
         } catch (error) {
-            alert('Redirecting to online page: ' + error.message);
-     //       window.location.href = 'online.html'; // Redirect to fallback page
+            alert('Redirecting to fallback page: ' + error.message);
+            // Redirect to fallback page
         }
     }
 
-    function loadIframe(videoUrl) {
-        videoIframe.src = videoUrl;
+    function loadVideo(videoUrl) {
+        videoPlayer.src = videoUrl;
 
-        // Show iframe and hide loading overlay
-        iframeContainer.style.display = 'block';
-        loadingOverlay.style.display = 'none';
+        videoPlayer.addEventListener('loadeddata', () => {
+            loadingOverlay.style.display = 'none';
+            videoContainer.style.display = 'block';
+        });
+
+        videoPlayer.addEventListener('error', () => {
+            alert('Failed to load the video.');
+            // Redirect to fallback page or display error
+        });
     }
 </script>
 
