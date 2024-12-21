@@ -54,12 +54,17 @@
             display: none;
             width: 100%;
             max-width: 800px;
-            height: auto;
         }
 
         video {
             width: 100%;
             height: auto;
+        }
+
+        #errorMessage {
+            display: none;
+            color: red;
+            text-align: center;
         }
     </style>
 </head>
@@ -75,39 +80,49 @@
     <video id="videoPlayer" controls autoplay></video>
 </div>
 
+<!-- Error Message -->
+<div id="errorMessage">Failed to load the video. Please try again or check the URL.</div>
+
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const mediafireUrl = urlParams.get('url');
     const loadingOverlay = document.getElementById('loadingOverlay');
     const videoContainer = document.getElementById('videoContainer');
     const videoPlayer = document.getElementById('videoPlayer');
+    const errorMessage = document.getElementById('errorMessage');
 
     if (!mediafireUrl) {
-        alert('No link provided.');
-        // Redirect to fallback page
+        showError('No link provided.');
     } else {
         getDirectLink(mediafireUrl);
     }
 
     async function getDirectLink(link) {
         try {
-            // Use AllOrigins or another proxy to fetch page content
+            // Use AllOrigins proxy to fetch page content
             const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`);
             const data = await response.json();
-            const pageContent = data.contents; // Extract the HTML content
+            const pageContent = data.contents;
 
-            // Extract the direct video URL using updated regex
+            // Extract the direct video URL using regex
             const videoMatch = pageContent.match(/<a[^>]+aria-label="Download file"[^>]+href="([^"]+)"/);
             if (videoMatch && videoMatch[1]) {
-                const directVideoUrl = "https:" + videoMatch[1]; // Add "https:" if the URL is relative
+                const rawVideoUrl = "https:" + videoMatch[1]; // Add "https:" if the URL is relative
+                const directVideoUrl = cleanUrl(rawVideoUrl); // Clean URL for compatibility
                 loadVideo(directVideoUrl);
             } else {
                 throw new Error('Direct video link not found.');
             }
         } catch (error) {
-            alert('Redirecting to fallback page: ' + error.message);
-            // Redirect to fallback page
+            showError('Failed to fetch the video link. ' + error.message);
         }
+    }
+
+    function cleanUrl(url) {
+        // Remove unnecessary query parameters (e.g., ?dkey=...&r=...)
+        const urlObj = new URL(url);
+        urlObj.search = ''; // Remove all query parameters
+        return urlObj.toString();
     }
 
     function loadVideo(videoUrl) {
@@ -119,9 +134,15 @@
         });
 
         videoPlayer.addEventListener('error', () => {
-            alert('Failed to load the video.');
-            // Redirect to fallback page or display error
+            showError('Failed to load the video. Please ensure the link is correct.');
         });
+    }
+
+    function showError(message) {
+        loadingOverlay.style.display = 'none';
+        videoContainer.style.display = 'none';
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = message;
     }
 </script>
 
