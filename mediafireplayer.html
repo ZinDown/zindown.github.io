@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-top: 8px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Video Container */
+        #iframeContainer {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- Iframe Container -->
+<div id="iframeContainer">
+    <iframe id="videoIframe"></iframe>
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const mediafireUrl = urlParams.get('url');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const videoIframe = document.getElementById('videoIframe');
+
+    if (!mediafireUrl) {
+        alert('No link provided.');
+       // window.location.href = 'online.html'; // Redirect to fallback page
+    } else {
+        getDirectLink(mediafireUrl);
+    }
+
+    async function getDirectLink(link) {
+        try {
+            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`);
+            const pageContent = await response.text();
+
+            // Extract direct video URL
+            const videoMatch = pageContent.match(/href="([^"]+)"[^>]*>Download/);
+            if (videoMatch && videoMatch[1]) {
+                const directVideoUrl = videoMatch[1];
+                loadIframe(directVideoUrl);
+            } else {
+                throw new Error('Direct video link not found.');
+            }
+        } catch (error) {
+            alert('Redirecting to online page: ' + error.message);
+     //       window.location.href = 'online.html'; // Redirect to fallback page
+        }
+    }
+
+    function loadIframe(videoUrl) {
+        videoIframe.src = videoUrl;
+
+        // Show iframe and hide loading overlay
+        iframeContainer.style.display = 'block';
+        loadingOverlay.style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
