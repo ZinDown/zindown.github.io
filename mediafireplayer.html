@@ -3,13 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Play Video</title>
+    <title>MediaFire Video Player</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .spinner {
+            border: 8px solid rgba(255, 255, 255, 0.2);
+            border-top: 8px solid #fff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        video {
+            display: none;
+            width: 80%;
+            max-width: 800px;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>MediaFire Video Player</h1>
-    <video width="640" height="360" controls>
-        <source src="https://dc700.4shared.com/download/kJHPbPi1ku/VID_20241221_100106_952.mp4?tsid=20241221-063042-e1acc200&sbsr=d2d9f8fc448b5be07d7d21de9682b58ab34&bip=NDUuNTUuMi4yMzI&" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- Video Player -->
+<video id="videoPlayer" controls autoplay muted></video>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
+    const videoPlayer = document.getElementById('videoPlayer');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    if (!scrapeLink) {
+        alert('No link provided.');
+        loadingOverlay.style.display = 'none';
+    } else {
+        scrapeVideoLink(scrapeLink);
+    }
+
+    async function scrapeVideoLink(link) {
+        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link); // Proxy URL
+        try {
+            const response = await fetch(proxyUrl);
+            const data = await response.json();
+            const pageContent = data.contents;
+
+            // Regex to extract the direct download link
+            const regex = /aria-label="Download file"\n.+href="(.*?)"/;
+            const match = pageContent.match(regex);
+
+            if (match && match[1]) {
+                const videoUrl = match[1];
+                loadVideo(videoUrl);
+            } else {
+                throw new Error('Direct download link not found.');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+            loadingOverlay.style.display = 'none';
+        }
+    }
+
+    function loadVideo(videoUrl) {
+        videoPlayer.src = videoUrl;
+        videoPlayer.style.display = 'block';
+        videoPlayer.play(); // Auto-play the video
+
+        videoPlayer.addEventListener('loadeddata', () => {
+            loadingOverlay.style.display = 'none';
+        });
+
+        videoPlayer.addEventListener('error', () => {
+            alert('Failed to load the video.');
+            loadingOverlay.style.display = 'none';
+        });
+    }
+</script>
+
 </body>
 </html>
