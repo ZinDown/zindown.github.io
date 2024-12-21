@@ -92,7 +92,7 @@
 
     async function getDirectLink(link) {
         try {
-            const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`);
+            const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(link)}`);
             const pageContent = await response.text();
 
             // Extract direct video URL
