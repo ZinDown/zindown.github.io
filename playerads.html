@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaFire Video Player</title>
+    <title>MediaFire Video Player with Ad</title>
     <style>
         body {
             margin: 0;
@@ -49,6 +49,7 @@
             }
         }
 
+        /* Video Player */
         video {
             display: none;
             width: 80%;
@@ -56,24 +57,24 @@
             height: auto;
             margin-top: 20px;
         }
-             #adImage {
-            display: none;
-            position: absolute;
+
+        /* Image Ad */
+        #adContainer {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 20;
         }
 
-        #adImage img {
-            max-width: 90%;
-            max-height: 90%;
-            border: 2px solid white;
+        #adContainer img {
+            max-width: 80%;
+            height: auto;
         }
     </style>
 </head>
@@ -84,17 +85,21 @@
     <div class="spinner"></div>
 </div>
 
+<!-- Ad Container -->
+<div id="adContainer">
+    <img src="https://i.ibb.co/34X22tX/adspost.jpg" alt="Ad">
+</div>
+
 <!-- Video Player -->
 <video id="videoPlayer" controls autoplay></video>
-    <div id="adImage">
-        <img src="https://i.ibb.co/34X22tX/adspost.jpg" alt="Ad">
-    </div>
+
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
     const videoPlayer = document.getElementById('videoPlayer');
     const loadingOverlay = document.getElementById('loadingOverlay');
-const adImage = document.getElementById('adImage');
+    const adContainer = document.getElementById('adContainer');
+
     if (!scrapeLink) {
         alert('No link provided.');
         loadingOverlay.style.display = 'none';
@@ -132,21 +137,20 @@ const adImage = document.getElementById('adImage');
 
         videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
-            
-            setTimeout(() => {
-                adImage.style.display = 'flex';
-                setTimeout(() => {
-                    adImage.style.display = 'none';
-                }, 200);
-            }, 2000);
-       
-        
+            showAd(); // Show ad when the video starts loading
         });
 
         videoPlayer.addEventListener('error', () => {
             alert('Failed to load the video.');
             loadingOverlay.style.display = 'none';
         });
+    }
+
+    function showAd() {
+        adContainer.style.display = 'flex';
+        setTimeout(() => {
+            adContainer.style.display = 'none'; // Remove ad after 3 seconds
+        }, 3000);
     }
 </script>
 
