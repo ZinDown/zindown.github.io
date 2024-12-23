@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
+    <title>MediaFire Video Player</title>
     <style>
         body {
             margin: 0;
@@ -11,12 +11,13 @@
             background-color: #000;
             color: white;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            overflow: hidden;
         }
 
+        /* Loading Overlay */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -48,21 +49,14 @@
             }
         }
 
-        #iframeContainer {
+        video {
             display: none;
-            width: 100%;
+            width: 80%;
             max-width: 800px;
-            height: 450px;
-            position: relative;
+            height: auto;
+            margin-top: 20px;
         }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        #adImage {
+             #adImage {
             display: none;
             position: absolute;
             top: 0;
@@ -90,68 +84,68 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Iframe Container -->
-<div id="iframeContainer">
-    <iframe id="videoIframe" frameborder="0" allowfullscreen></iframe>
+<!-- Video Player -->
+<video id="videoPlayer" controls autoplay></video>
     <div id="adImage">
         <img src="https://i.ibb.co/34X22tX/adspost.jpg" alt="Ad">
     </div>
-</div>
-
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
-    const iframeContainer = document.getElementById('iframeContainer');
-    const videoIframe = document.getElementById('videoIframe');
+    const videoPlayer = document.getElementById('videoPlayer');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const adImage = document.getElementById('adImage');
-
+const adImage = document.getElementById('adImage');
     if (!scrapeLink) {
         alert('No link provided.');
+        loadingOverlay.style.display = 'none';
     } else {
         scrapeVideoLink(scrapeLink);
     }
 
     async function scrapeVideoLink(link) {
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link);
+        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link); // Proxy URL
         try {
             const response = await fetch(proxyUrl);
             const data = await response.json();
-            const html = data.contents;
+            const pageContent = data.contents;
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const iframeElement = doc.querySelector('iframe[src*="maynoe.com/wp-content"]');
+            // Regex to extract the direct download link
+            const regex = /aria-label="Download file"\n.+href="(.*?)"/;
+            const match = pageContent.match(regex);
 
-            if (iframeElement) {
-                const videoUrl = iframeElement.getAttribute('src');
-                loadIframe(videoUrl);
+            if (match && match[1]) {
+                const videoUrl = match[1];
+                loadVideo(videoUrl);
             } else {
-                throw new Error('Iframe link not found.');
+                throw new Error('Direct download link not found.');
             }
         } catch (error) {
             alert('Error: ' + error.message);
+            loadingOverlay.style.display = 'none';
         }
     }
 
-    function loadIframe(videoUrl) {
-        videoIframe.src = videoUrl;
+    function loadVideo(videoUrl) {
+        videoPlayer.src = videoUrl;
+        videoPlayer.style.display = 'block';
+        videoPlayer.play(); // Auto-play the video
 
-        videoIframe.addEventListener('load', () => {
+        videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
-            iframeContainer.style.display = 'block';
-
-            // Show the ad image after 5 seconds and hide it after 2 seconds
+            
             setTimeout(() => {
                 adImage.style.display = 'flex';
                 setTimeout(() => {
                     adImage.style.display = 'none';
                 }, 200);
             }, 2000);
+       
+        
         });
 
-        videoIframe.addEventListener('error', () => {
-            alert('Failed to load the video iframe.');
+        videoPlayer.addEventListener('error', () => {
+            alert('Failed to load the video.');
+            loadingOverlay.style.display = 'none';
         });
     }
 </script>
