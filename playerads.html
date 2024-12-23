@@ -132,6 +132,14 @@
     }
 
     function loadVideo(videoUrl) {
+
+setTimeout(() => {
+                adContainer.style.display = 'flex';
+                setTimeout(() => {
+                    adContainer.style.display = 'none'; // Remove ad after 3 seconds
+                }, 200);
+            }, 4500);
+        
         videoPlayer.src = videoUrl;
         videoPlayer.style.display = 'block';
         videoPlayer.play(); // Auto-play the video
@@ -139,12 +147,7 @@
         videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
             
-            setTimeout(() => {
-                adContainer.style.display = 'flex';
-                setTimeout(() => {
-                    adContainer.style.display = 'none'; // Remove ad after 3 seconds
-                }, 200);
-            }, 4500);
+            
         
         });
 
@@ -154,12 +157,7 @@
         });
     }
 
-    function showAd() {
-        adContainer.style.display = 'flex';
-        setTimeout(() => {
-            adContainer.style.display = 'none'; // Remove ad after 3 seconds
-        }, 3000);
-    }
+    
 </script>
 
 </body>
