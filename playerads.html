@@ -73,8 +73,9 @@
         }
 
         #adContainer img {
-            max-width: 80%;
-            height: auto;
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -137,7 +138,14 @@
 
         videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
-            showAd(); // Show ad when the video starts loading
+            
+            setTimeout(() => {
+                adContainer.style.display = 'flex';
+                setTimeout(() => {
+                    adContainer.style.display = 'none'; // Remove ad after 3 seconds
+                }, 200);
+            }, 2000);
+        
         });
 
         videoPlayer.addEventListener('error', () => {
