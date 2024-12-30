@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaFire Player</title>
+    <title>Fast MediaFire Video Player</title>
     <style>
         body {
             margin: 0;
@@ -11,7 +11,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #000; /* Optional: Black background */
+            background-color: #000;
         }
         video {
             max-width: 100%;
@@ -19,22 +19,35 @@
         }
     </style>
     <script>
-        // Extract the "url" parameter from the query string
-        function getVideoUrl() {
+        async function quickScrape() {
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get('url');
+            const mediafireUrl = urlParams.get('url');
+
+            if (!mediafireUrl) {
+                alert('No MediaFire URL provided!');
+                return;
+            }
+
+            try {
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediafireUrl)}`;
+                const response = await fetch(proxyUrl);
+                const pageContent = await response.text();
+
+                // Fast regex to find the direct download link
+                const match = pageContent.match(/aria-label="Download file".*?href="(.*?)"/);
+                if (match && match[1]) {
+                    const videoUrl = match[1];
+                    document.getElementById('videoPlayer').src = videoUrl;
+                } else {
+                    alert('Failed to extract the video link.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during scraping.');
+            }
         }
 
-        // Set the video source dynamically
-        window.onload = () => {
-            const videoUrl = getVideoUrl();
-            if (videoUrl) {
-                const videoElement = document.getElementById('videoPlayer');
-                videoElement.src = videoUrl;
-            } else {
-                alert('No video URL provided!');
-            }
-        };
+        window.onload = quickScrape;
     </script>
 </head>
 <body>
