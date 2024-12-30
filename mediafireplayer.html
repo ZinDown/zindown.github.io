@@ -3,122 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaFire Video Player</title>
+    <title>MediaFire Player</title>
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: white;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            background-color: #000; /* Optional: Black background */
         }
-
-        /* Loading Overlay */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.2);
-            border-top: 8px solid #fff;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-
         video {
-            display: none;
-            width: 80%;
-            max-width: 800px;
-            height: auto;
-            margin-top: 20px;
+            max-width: 100%;
+            max-height: 100%;
         }
     </style>
+    <script>
+        // Extract the "url" parameter from the query string
+        function getVideoUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('url');
+        }
+
+        // Set the video source dynamically
+        window.onload = () => {
+            const videoUrl = getVideoUrl();
+            if (videoUrl) {
+                const videoElement = document.getElementById('videoPlayer');
+                videoElement.src = videoUrl;
+            } else {
+                alert('No video URL provided!');
+            }
+        };
+    </script>
 </head>
 <body>
-
-<!-- Loading Overlay -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
-</div>
-
-<!-- Video Player -->
-<video id="videoPlayer" controls autoplay></video>
-
-<script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
-    const videoPlayer = document.getElementById('videoPlayer');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-
-    if (!scrapeLink) {
-        alert('No link provided.');
-        loadingOverlay.style.display = 'none';
-    } else {
-        scrapeVideoLink(scrapeLink);
-    }
-
-    async function scrapeVideoLink(link) {
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link); // Proxy URL
-        try {
-            const response = await fetch(proxyUrl);
-            const data = await response.json();
-            const pageContent = data.contents;
-
-            // Regex to extract the direct download link
-            const regex = /aria-label="Download file"\n.+href="(.*?)"/;
-            const match = pageContent.match(regex);
-
-            if (match && match[1]) {
-                const videoUrl = match[1];
-                loadVideo(videoUrl);
-            } else {
-                throw new Error('Direct download link not found.');
-            }
-        } catch (error) {
-            alert('Error: ' + error.message);
-            loadingOverlay.style.display = 'none';
-        }
-    }
-
-    function loadVideo(videoUrl) {
-        videoPlayer.src = videoUrl;
-        videoPlayer.style.display = 'block';
-        videoPlayer.play(); // Auto-play the video
-
-        videoPlayer.addEventListener('loadeddata', () => {
-            loadingOverlay.style.display = 'none';
-        });
-
-        videoPlayer.addEventListener('error', () => {
-            alert('Failed to load the video.');
-            loadingOverlay.style.display = 'none';
-        });
-    }
-</script>
-
+    <video id="videoPlayer" controls autoplay>
+        Your browser does not support the video tag.
+    </video>
 </body>
 </html>
