@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fast MediaFire Video Player</title>
+    <title>MediaFire Video Scraper</title>
     <style>
         body {
             margin: 0;
@@ -19,35 +19,44 @@
         }
     </style>
     <script>
-        async function quickScrape() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const mediafireUrl = urlParams.get('url');
-
-            if (!mediafireUrl) {
-                alert('No MediaFire URL provided!');
-                return;
+        async function fetchVideo(url) {
+            // Fix URL to use HTTPS if needed
+            if (!url.startsWith("https")) {
+                url = url.replace("http", "https");
             }
 
             try {
-                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediafireUrl)}`;
+                // Fetch the MediaFire page
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
                 const response = await fetch(proxyUrl);
                 const pageContent = await response.text();
 
-                // Fast regex to find the direct download link
-                const match = pageContent.match(/aria-label="Download file".*?href="(.*?)"/);
+                // Use regex to extract the direct download link
+                const regex = /aria-label="Download file"\\n.+?href="(.*?)"/;
+                const match = pageContent.match(regex);
+
                 if (match && match[1]) {
                     const videoUrl = match[1];
-                    document.getElementById('videoPlayer').src = videoUrl;
+                    document.getElementById("videoPlayer").src = videoUrl;
                 } else {
-                    alert('Failed to extract the video link.');
+                    alert("Failed to extract video link.");
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred during scraping.');
+                console.error("Error:", error);
+                alert("An error occurred during scraping.");
             }
         }
 
-        window.onload = quickScrape;
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mediafireUrl = urlParams.get("url");
+
+            if (mediafireUrl) {
+                fetchVideo(mediafireUrl);
+            } else {
+                alert("No MediaFire URL provided!");
+            }
+        };
     </script>
 </head>
 <body>
