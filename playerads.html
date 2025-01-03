@@ -48,17 +48,16 @@
             }
         }
 
-        #iframeContainer {
+        #videoContainer {
             display: none;
             width: 100%;
             max-width: 800px;
-            height: 450px;
             position: relative;
         }
 
-        iframe {
+        video {
             width: 100%;
-            height: 100%;
+            height: auto;
             border: none;
         }
 
@@ -90,9 +89,9 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Iframe Container -->
-<div id="iframeContainer">
-    <iframe id="videoIframe" frameborder="0" allowfullscreen></iframe>
+<!-- Video Container -->
+<div id="videoContainer">
+    <video id="videoPlayer" controls></video>
     <div id="adImage">
         <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Ad">
     </div>
@@ -101,8 +100,8 @@
 <script>
     const scrapeLink = new URLSearchParams(window.location.search).get('url');
     const loadingOverlay = document.querySelector('#loadingOverlay');
-    const iframeContainer = document.querySelector('#iframeContainer');
-    const videoIframe = document.querySelector('#videoIframe');
+    const videoContainer = document.querySelector('#videoContainer');
+    const videoPlayer = document.querySelector('#videoPlayer');
     const adImage = document.querySelector('#adImage');
 
     if (!scrapeLink) {
@@ -127,7 +126,7 @@
 
             if (jsonMatch && jsonMatch[1]) {
                 const videoUrl = jsonMatch[1]; // The video URL is extracted
-                loadIframe(videoUrl);
+                loadVideoPlayer(videoUrl);
             } else {
                 throw new Error('Video URL (contentUrl) not found.');
             }
@@ -136,24 +135,24 @@
         }
     }
 
-    function loadIframe(videoUrl) {
-        videoIframe.src = videoUrl;
+    function loadVideoPlayer(videoUrl) {
+        videoPlayer.src = videoUrl;
 
-        videoIframe.addEventListener('load', () => {
+        videoPlayer.addEventListener('loadeddata', () => {
             loadingOverlay.style.display = 'none';
-            iframeContainer.style.display = 'block';
+            videoContainer.style.display = 'block';
 
             // Show ad image after 4 seconds, hide after 2 seconds
             setTimeout(() => {
                 adImage.style.display = 'flex';
                 setTimeout(() => {
                     adImage.style.display = 'none';
-                }, 2000);
+                }, 200);
             }, 4000);
         });
 
-        videoIframe.addEventListener('error', () => {
-            alert('Failed to load the video iframe.');
+        videoPlayer.addEventListener('error', () => {
+            alert('Failed to load the video player.');
         });
     }
 </script>
