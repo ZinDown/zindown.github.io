@@ -118,14 +118,11 @@
             const data = await response.json();
             const html = data.contents;
 
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            // Extracting the JSON object within the page content
+            // Extracting the contentUrl directly from the HTML
             const jsonMatch = html.match(/"contentUrl":\s*"([^"]+)"/);
 
             if (jsonMatch && jsonMatch[1]) {
-                const videoUrl = jsonMatch[1]; // The video URL is extracted
+                const videoUrl = jsonMatch[1]; // Extracted video URL
                 loadVideoPlayer(videoUrl);
             } else {
                 throw new Error('Video URL (contentUrl) not found.');
@@ -136,21 +133,23 @@
     }
 
     function loadVideoPlayer(videoUrl) {
-        videoPlayer.src = videoUrl;
+        videoPlayer.src = videoUrl;  // Set the video URL
 
+        // Wait until the video is loaded
         videoPlayer.addEventListener('loadeddata', () => {
-            loadingOverlay.style.display = 'none';
-            videoContainer.style.display = 'block';
+            loadingOverlay.style.display = 'none'; // Hide the loading overlay
+            videoContainer.style.display = 'block'; // Show the video container
 
             // Show ad image after 4 seconds, hide after 2 seconds
             setTimeout(() => {
                 adImage.style.display = 'flex';
                 setTimeout(() => {
                     adImage.style.display = 'none';
-                }, 200);
+                }, 2000);
             }, 4000);
         });
 
+        // Error handling
         videoPlayer.addEventListener('error', () => {
             alert('Failed to load the video player.');
         });
