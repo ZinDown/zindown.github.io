@@ -22,15 +22,57 @@
       width: 100%;
       height: 100%;
     }
+
+    /* Style for the image below the iframe */
+    .image-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .image-container img {
+      max-width: 80%;
+      height: auto;
+    }
   </style>
 </head>
 <body>
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
   <div class="iframe-container">
-    <iframe src="https://www.samusar.com/embed/25978" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+    <!-- Empty iframe initially -->
+    <iframe id="videoIframe" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+
+  <!-- Image below the iframe -->
+  <div class="image-container">
+    <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Image below video">
   </div>
 </div>
+
+<script>
+  // Function to get the video link based on the query string
+  function getVideoLinkFromQuery() {
+    const urlParams = new URLSearchParams(window.location.search); // Get query string parameters
+    const videoUrl = urlParams.get('url'); // Fetch the 'url' parameter
+    if (videoUrl) {
+      return videoUrl; // Return the video URL if it exists
+    }
+    return null; // Return null if no 'url' parameter exists
+  }
+
+  // Set the iframe src dynamically
+  function setVideoLink() {
+    const videoLink = getVideoLinkFromQuery();
+    if (videoLink) {
+      document.getElementById("videoIframe").src = videoLink; // Update iframe src with the video URL
+    } else {
+      console.error("No video URL found in the query string");
+    }
+  }
+
+  // Run the function to set the video link when the page loads
+  window.onload = setVideoLink;
+</script>
 
 </body>
 </html>
