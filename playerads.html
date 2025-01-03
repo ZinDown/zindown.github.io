@@ -17,6 +17,45 @@
             overflow: hidden;
         }
 
+        .video-holder {
+            position: relative;
+            width: 100%;
+            max-width: 1280px;
+            height: 720px;
+            background-color: #1e1e1e;
+            border: 10px solid #1e8f5f; /* Green border */
+            box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5); /* Green shadow */
+        }
+
+        .player {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .player-holder {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background-color: #111; /* Dark background for the player */
+        }
+
+        .player-wrap {
+            width: 100%;
+            height: 100%;
+            padding-bottom: 56.302521008403%; /* Aspect ratio of 16:9 */
+            position: relative;
+        }
+
+        #kt_player {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* Loading overlay with a green spinner */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -32,7 +71,7 @@
 
         .spinner {
             border: 8px solid rgba(255, 255, 255, 0.2);
-            border-top: 8px solid #fff;
+            border-top: 8px solid #00FF00; /* Green spinner */
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -47,39 +86,6 @@
                 transform: rotate(360deg);
             }
         }
-
-        #videoContainer {
-            display: none;
-            width: 100%;
-            max-width: 800px;
-            position: relative;
-        }
-
-        video {
-            width: 100%;
-            height: auto;
-            border: none;
-        }
-
-        #adImage {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-        }
-
-        #adImage img {
-            max-width: 100%;
-            max-height: 100%;
-            border: 2px solid white;
-        }
     </style>
 </head>
 <body>
@@ -89,69 +95,55 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Video Container -->
-<div id="videoContainer">
-    <video id="videoPlayer" controls></video>
-    <div id="adImage">
-        <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Ad">
+<!-- Video Holder -->
+<div class="video-holder">
+    <div class="player">
+        <div class="player-holder">
+            <div class="player-wrap">
+                <div id="kt_player"></div>
+            </div>
+        </div>
     </div>
 </div>
 
-<script>
-    const scrapeLink = new URLSearchParams(window.location.search).get('url');
-    const loadingOverlay = document.querySelector('#loadingOverlay');
-    const videoContainer = document.querySelector('#videoContainer');
-    const videoPlayer = document.querySelector('#videoPlayer');
-    const adImage = document.querySelector('#adImage');
+<script type="text/javascript" src="https://www.samusar.com/player/kt_player.js?v=8.8.9"></script>
+<script type="text/javascript">
+    // Fetch URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoUrl = urlParams.get('url'); // Get the 'url' parameter from the query string
 
-    if (!scrapeLink) {
-        alert('No link provided.');
+    if (!videoUrl) {
+        alert('No video URL provided.');
     } else {
-        scrapeVideoLink(scrapeLink);
-    }
-
-    async function scrapeVideoLink(link) {
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link);
-
-        try {
-            const response = await fetch(proxyUrl);
-            const data = await response.json();
-            const html = data.contents;
-
-            // Extracting the contentUrl directly from the HTML
-            const jsonMatch = html.match(/"contentUrl":\s*"([^"]+)"/);
-
-            if (jsonMatch && jsonMatch[1]) {
-                const videoUrl = jsonMatch[1]; // Extracted video URL
-                loadVideoPlayer(videoUrl);
-            } else {
-                throw new Error('Video URL (contentUrl) not found.');
-            }
-        } catch (error) {
-            alert('Error: ' + error.message);
-        }
+        // Once URL is fetched, load the video
+        loadVideoPlayer(videoUrl);
     }
 
     function loadVideoPlayer(videoUrl) {
-        videoPlayer.src = videoUrl;  // Set the video URL
+        // Configuration for the kt_player
+        var playerConfig = {
+            video_id: '25978',
+            video_title: 'Video Title', // You can replace this dynamically if needed
+            video_url: videoUrl,
+            player_width: '100%',
+            player_height: '100%',
+            skin: 'youtube.css',
+            volume: '1',
+            preload: 'metadata',
+            adv_pre_vast: 'https://s.magsrv.com/splash.php?idzone=4915770&ref=kernelteam',
+            adv_post_vast: 'https://s.magsrv.com/splash.php?idzone=4915770&ref=kernelteam',
+            event_reporting: 'https://www.samusar.com/player/stats.php?embed=0&device_type=2',
+            float_replay: 'true',
+            timeline_screens_url: 'https://www.samusar.com/contents/videos_screenshots/25000/25978/timelines/mp4/180x100/{time}.jpg',
+            related_src: 'https://www.samusar.com/related_videos_html/25978/',
+        };
 
-        // Wait until the video is loaded
-        videoPlayer.addEventListener('loadeddata', () => {
-            loadingOverlay.style.display = 'none'; // Hide the loading overlay
-            videoContainer.style.display = 'block'; // Show the video container
+        // Initialize the player
+        window['player_obj'] = kt_player('kt_player', 'https://www.samusar.com/player/kt_player.swf?v=8.8.9', '100%', '100%', playerConfig);
 
-            // Show ad image after 4 seconds, hide after 2 seconds
-            setTimeout(() => {
-                adImage.style.display = 'flex';
-                setTimeout(() => {
-                    adImage.style.display = 'none';
-                }, 2000);
-            }, 4000);
-        });
-
-        // Error handling
-        videoPlayer.addEventListener('error', () => {
-            alert('Failed to load the video player.');
+        // Hide loading overlay once the player is ready
+        window['player_obj'].addEventListener('load', () => {
+            document.getElementById('loadingOverlay').style.display = 'none';
         });
     }
 </script>
