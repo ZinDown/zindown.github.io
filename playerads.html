@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaFire Video Player with Ad</title>
+    <title>Video Player</title>
     <style>
         body {
             margin: 0;
@@ -11,13 +11,12 @@
             background-color: #000;
             color: white;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* Loading Overlay */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -49,33 +48,38 @@
             }
         }
 
-        /* Video Player */
-        video {
+        #iframeContainer {
             display: none;
-            width: 80%;
+            width: 100%;
             max-width: 800px;
-            height: auto;
-            margin-top: 20px;
+            height: 450px;
+            position: relative;
         }
 
-        /* Image Ad */
-        #adContainer {
-            position: fixed;
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        #adImage {
+            display: none;
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
             justify-content: center;
             align-items: center;
             z-index: 20;
         }
 
-        #adContainer img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
+        #adImage img {
+            max-width: 100%;
+            max-height: 100%;
+            border: 2px solid white;
         }
     </style>
 </head>
@@ -86,78 +90,73 @@
     <div class="spinner"></div>
 </div>
 
-<!-- Ad Container -->
-<div id="adContainer">
-    <img src="https://i.ibb.co/34X22tX/adspost.jpg" alt="Ad">
+<!-- Iframe Container -->
+<div id="iframeContainer">
+    <iframe id="videoIframe" frameborder="0" allowfullscreen></iframe>
+    <div id="adImage">
+        <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Ad">
+    </div>
 </div>
-
-<!-- Video Player -->
-<video id="videoPlayer" controls autoplay></video>
 
 <script>
     const urlParams = new URLSearchParams(window.location.search);
     const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
-    const videoPlayer = document.getElementById('videoPlayer');
+    const iframeContainer = document.getElementById('iframeContainer');
+    const videoIframe = document.getElementById('videoIframe');
     const loadingOverlay = document.getElementById('loadingOverlay');
-    const adContainer = document.getElementById('adContainer');
+    const adImage = document.getElementById('adImage');
 
     if (!scrapeLink) {
         alert('No link provided.');
-        loadingOverlay.style.display = 'none';
     } else {
         scrapeVideoLink(scrapeLink);
     }
 
     async function scrapeVideoLink(link) {
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link); // Proxy URL
+        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link);
         try {
             const response = await fetch(proxyUrl);
             const data = await response.json();
-            const pageContent = data.contents;
+            const html = data.contents;
 
-            // Regex to extract the direct download link
-            const regex = /aria-label="Download file"\n.+href="(.*?)"/;
-            const match = pageContent.match(regex);
+const videoUrlPattern = /"contentUrl":\s*"([^"]+)"/;
+                    const match = html.match(videoUrlPattern);
 
-            if (match && match[1]) {
-                const videoUrl = match[1];
-                loadVideo(videoUrl);
-            } else {
-                throw new Error('Direct download link not found.');
-            }
+                    if (match && match[1]) {
+                        const videoUrl = match[1];
+                        loadIframe(videoUrl);
+                    } else {
+                        throw new Error('Iframe link not found.');
+                    }
+                })
+
+            
+            
         } catch (error) {
             alert('Error: ' + error.message);
-            loadingOverlay.style.display = 'none';
         }
     }
 
-    function loadVideo(videoUrl) {
+    function loadIframe(videoUrl) {
+        videoIframe.src = videoUrl;
 
-setTimeout(() => {
-                adContainer.style.display = 'flex';
-                setTimeout(() => {
-                    adContainer.style.display = 'none'; // Remove ad after 3 seconds
-                }, 200);
-            }, 4500);
-        
-        videoPlayer.src = videoUrl;
-        videoPlayer.style.display = 'block';
-        videoPlayer.play(); // Auto-play the video
-
-        videoPlayer.addEventListener('loadeddata', () => {
+        videoIframe.addEventListener('load', () => {
             loadingOverlay.style.display = 'none';
-            
-            
-        
+            iframeContainer.style.display = 'block';
+
+            // Show the ad image after 5 seconds and hide it after 2 seconds
+            setTimeout(() => {
+                adImage.style.display = 'flex';
+                setTimeout(() => {
+                    adImage.style.display = 'none';
+                }, 200);
+            }, 4000);
         });
 
-        videoPlayer.addEventListener('error', () => {
-            alert('Failed to load the video.');
-            loadingOverlay.style.display = 'none';
+        videoIframe.addEventListener('error', () => {
+            alert('Failed to load the video iframe.');
         });
     }
-
-    
 </script>
 
 </body>
