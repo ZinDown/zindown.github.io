@@ -99,12 +99,11 @@
 </div>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const scrapeLink = urlParams.get('url');  // Get 'url' parameter from the query string
-    const iframeContainer = document.getElementById('iframeContainer');
-    const videoIframe = document.getElementById('videoIframe');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const adImage = document.getElementById('adImage');
+    const scrapeLink = new URLSearchParams(window.location.search).get('url');
+    const loadingOverlay = document.querySelector('#loadingOverlay');
+    const iframeContainer = document.querySelector('#iframeContainer');
+    const videoIframe = document.querySelector('#videoIframe');
+    const adImage = document.querySelector('#adImage');
 
     if (!scrapeLink) {
         alert('No link provided.');
@@ -114,24 +113,24 @@
 
     async function scrapeVideoLink(link) {
         const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link);
+
         try {
             const response = await fetch(proxyUrl);
             const data = await response.json();
             const html = data.contents;
 
-const videoUrlPattern = /"contentUrl":\s*"([^"]+)"/;
-                    const match = html.match(videoUrlPattern);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
 
-                    if (match && match[1]) {
-                        const videoUrl = match[1];
-                        loadIframe(videoUrl);
-                    } else {
-                        throw new Error('Iframe link not found.');
-                    }
-                })
+            // Extracting the JSON object within the page content
+            const jsonMatch = html.match(/"contentUrl":\s*"([^"]+)"/);
 
-            
-            
+            if (jsonMatch && jsonMatch[1]) {
+                const videoUrl = jsonMatch[1]; // The video URL is extracted
+                loadIframe(videoUrl);
+            } else {
+                throw new Error('Video URL (contentUrl) not found.');
+            }
         } catch (error) {
             alert('Error: ' + error.message);
         }
@@ -144,12 +143,12 @@ const videoUrlPattern = /"contentUrl":\s*"([^"]+)"/;
             loadingOverlay.style.display = 'none';
             iframeContainer.style.display = 'block';
 
-            // Show the ad image after 5 seconds and hide it after 2 seconds
+            // Show ad image after 4 seconds, hide after 2 seconds
             setTimeout(() => {
                 adImage.style.display = 'flex';
                 setTimeout(() => {
                     adImage.style.display = 'none';
-                }, 200);
+                }, 2000);
             }, 4000);
         });
 
