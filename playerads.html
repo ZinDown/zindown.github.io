@@ -1,152 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Player</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #000;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .video-holder {
-            position: relative;
-            width: 100%;
-            max-width: 1280px;
-            height: 720px;
-            background-color: #1e1e1e;
-            border: 10px solid #1e8f5f; /* Green border */
-            box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5); /* Green shadow */
-        }
-
-        .player {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .player-holder {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            background-color: #111; /* Dark background for the player */
-        }
-
-        .player-wrap {
-            width: 100%;
-            height: 100%;
-            padding-bottom: 56.302521008403%; /* Aspect ratio of 16:9 */
-            position: relative;
-        }
-
-        #kt_player {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-        }
-
-        /* Loading overlay with a green spinner */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .spinner {
-            border: 8px solid rgba(255, 255, 255, 0.2);
-            border-top: 8px solid #00FF00; /* Green spinner */
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Player</title>
 </head>
 <body>
 
-<!-- Loading Overlay -->
-<div id="loadingOverlay">
-    <div class="spinner"></div>
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+  <div style="width: 476px; height: 268px;">
+    <iframe width="476" height="268" src="https://www.samusar.com/embed/25978?autoplay=1" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
 </div>
-
-<!-- Video Holder -->
-<div class="video-holder">
-    <div class="player">
-        <div class="player-holder">
-            <div class="player-wrap">
-                <div id="kt_player"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script type="text/javascript" src="https://www.samusar.com/player/kt_player.js?v=8.8.9"></script>
-<script type="text/javascript">
-    // Fetch URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoUrl = urlParams.get('url'); // Get the 'url' parameter from the query string
-
-    if (!videoUrl) {
-        alert('No video URL provided.');
-    } else {
-        // Once URL is fetched, load the video
-        loadVideoPlayer(videoUrl);
-    }
-
-    function loadVideoPlayer(videoUrl) {
-        // Configuration for the kt_player
-        var playerConfig = {
-            video_id: '25978',
-            video_title: 'Video Title', // You can replace this dynamically if needed
-            video_url: videoUrl,
-            player_width: '100%',
-            player_height: '100%',
-            skin: 'youtube.css',
-            volume: '1',
-            preload: 'metadata',
-            adv_pre_vast: 'https://s.magsrv.com/splash.php?idzone=4915770&ref=kernelteam',
-            adv_post_vast: 'https://s.magsrv.com/splash.php?idzone=4915770&ref=kernelteam',
-            event_reporting: 'https://www.samusar.com/player/stats.php?embed=0&device_type=2',
-            float_replay: 'true',
-            timeline_screens_url: 'https://www.samusar.com/contents/videos_screenshots/25000/25978/timelines/mp4/180x100/{time}.jpg',
-            related_src: 'https://www.samusar.com/related_videos_html/25978/',
-        };
-
-        // Initialize the player
-        window['player_obj'] = kt_player('kt_player', 'https://www.samusar.com/player/kt_player.swf?v=8.8.9', '100%', '100%', playerConfig);
-
-        // Hide loading overlay once the player is ready
-        window['player_obj'].addEventListener('load', () => {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        });
-    }
-</script>
 
 </body>
 </html>
