@@ -13,3 +13,8 @@ https://zindown.github.io/maynoeplayer.html?url=
 [ 4 ] For mediafire Player
 
 https://zindown.github.io/mediafireplayer.html?url=
+
+[ 5 ] For Samusar Player
+
+https://zindown.github.io/samusarplayer.html?url=
+
