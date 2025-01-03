@@ -22,15 +22,47 @@
       width: 100%;
       height: 100%;
     }
+
+    /* Style for the images */
+    .image-container {
+      text-align: center;
+      margin-top: 20px; /* Add top margin here */
+    }
+
+    .image-container img {
+      height: auto;
+    }
+
+    /* Image above the iframe (100% width) */
+    .image-container img:first-of-type {
+      max-width: 100%;  /* Set max-width to 100% for the first image */
+    }
+
+    /* Image below the iframe (80% width) */
+    .image-container img:last-of-type {
+      max-width: 80%;  /* Set max-width to 80% for the second image */
+    }
   </style>
 </head>
 <body>
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
+  
+  <!-- Image above the iframe -->
+  <div class="image-container">
+    <img src="https://i.ibb.co/xMKVn1C/click.jpg" alt="Image above video">
+  </div>
+
   <div class="iframe-container">
     <!-- Empty iframe initially -->
     <iframe id="videoIframe" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
   </div>
+
+  <!-- Image below the iframe -->
+  <div class="image-container">
+    <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Image below video">
+  </div>
+
 </div>
 
 <script>
