@@ -2,139 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <title>404 - Page Not Found</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Kar Loe Kar</title>
+
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background: #0f0f0f;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       flex-direction: column;
-      min-height: 100vh;
+      text-align: center;
     }
 
     h1 {
-      text-align: center;
+      font-size: 6rem;
       margin: 0;
-      padding: 20px 0;
-      color: white;
-      background: linear-gradient(135deg, #4CAF50, #388E3C);
-      border-bottom-left-radius: 15px;
-      border-bottom-right-radius: 15px;
-      font-size: 24px;
-      letter-spacing: 0.5px;
     }
 
-    .container {
-      flex: 1;
-      padding: 10px;
-      width: 100%;
-      max-width: 1200px;
-      box-sizing: border-box;
-      overflow-y: auto;
-      margin: 0 auto;
+    p {
+      font-size: 1.5rem;
+      margin: 10px 0 20px;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      padding: 0 10px;
-    }
-
-    .grid-item {
-      background-color: white;
-      padding: 15px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .grid-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .grid-item img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 12px;
-      transition: transform 0.3s ease;
-    }
-
-    .grid-item img:hover {
-      transform: scale(1.05);
-    }
-
-    .grid-item p {
-      margin: 10px 0 0;
-      font-size: 14px;
-      color: #333;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    a {
+      text-decoration: none;
+      color: #00ffff;
       font-weight: bold;
+      padding: 10px 20px;
+      border: 2px solid #00ffff;
+      border-radius: 8px;
+      transition: all 0.3s ease;
     }
 
-    @media screen and (max-width: 600px) {
-      .grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-      }
-
-      .grid-item img {
-        height: 100px;
-      }
-
-      .container {
-        padding: 5px;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
+    a:hover {
+      background-color: #00ffff;
+      color: #0f0f0f;
     }
   </style>
 </head>
 <body>
 
-  <!-- Title -->
-  <h1>All Kar Loe Kar</h1>
-
-  <!-- Grid View Section -->
-  <div class="container">
-    <div id="gridView" class="grid"></div>
-  </div>
-
-  <script>
-    // Hidden JSON link
-    const dataUrl = atob('aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL2FtZW1laHRvb24vVmlkZW9WNC9yZWZzL2hlYWRzL21haW4vZGF0YS5qc29u');
-
-    // Fetch JSON for grid view
-    fetch(dataUrl)
-      .then(response => response.json())
-      .then(data => {
-        const gridView = document.getElementById('gridView');
-        data.apyar.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'grid-item';
-          div.innerHTML = `
-            <img src="${item.image}" alt="${item.title}">
-            <p>${item.title}</p>
-          `;
-          div.addEventListener('click', () => {
-            window.location.href = `/second.html?link=${encodeURIComponent(item.link)}`;
-          });
-          gridView.appendChild(div);
-        });
-      })
-      .catch(error => console.error('Error fetching JSON for grid view:', error));
-  </script>
+  <h1>404</h1>
+  <p>Oops! The page you're looking for doesn't exist.</p>
+  <a href="/">Go Home</a>
 
 </body>
 </html>
