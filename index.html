@@ -1,56 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>404 - Page Not Found</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>App Download - AllKar Namate</title>
+<style>
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    background: linear-gradient(135deg, #a8d5ba, #5ca87a);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  .container {
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem 3rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+  }
+  img.app-logo {
+    width: 140px;
+    height: 140px;
+    border-radius: 30%;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  }
+  h1 {
+    font-weight: 900;
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.6);
+  }
+  p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  }
 
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #0f0f0f;
-      color: #ffffff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      flex-direction: column;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 6rem;
-      margin: 0;
-    }
-
-    p {
-      font-size: 1.5rem;
-      margin: 10px 0 20px;
-    }
-
-    a {
-      text-decoration: none;
-      color: #00ffff;
-      font-weight: bold;
-      padding: 10px 20px;
-      border: 2px solid #00ffff;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-    }
-
-    a:hover {
-      background-color: #00ffff;
-      color: #0f0f0f;
-    }
-  </style>
+  /* Bright Green Liquid Button */
+  .liquid-btn {
+    position: relative;
+    display: inline-block;
+    padding: 12px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff; /* white text */
+    background: #2ecc40; /* bright green */
+    border-radius: 40px;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(46, 204, 64, 0.8);
+    border: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    text-decoration: none;
+  }
+  .liquid-btn:hover {
+    background: #27ae38;
+    color: #fff;
+  }
+  .liquid-btn::before,
+  .liquid-btn::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: #58d68d;
+    opacity: 0.8;
+    filter: blur(18px);
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .liquid-btn::before {
+    width: 120px;
+    height: 120px;
+    top: -40px;
+    left: -60px;
+    animation-name: blobMove1;
+    animation-duration: 4000ms;
+  }
+  .liquid-btn::after {
+    width: 80px;
+    height: 80px;
+    bottom: -30px;
+    right: -30px;
+    background: #28a745;
+    filter: blur(22px);
+    animation-name: blobMove2;
+    animation-duration: 3500ms;
+  }
+  @keyframes blobMove1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, 15px) scale(1.2); }
+  }
+  @keyframes blobMove2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-20px, -15px) scale(0.8); }
+  }
+</style>
 </head>
 <body>
-
-  <h1>404</h1>
-  <p>Oops! The page you're looking for doesn't exist.</p>
-  <a href="/">Go Home</a>
-
+  <div class="container">
+    <img
+      src="https://raw.githubusercontent.com/ZinDown/The-Boss-Dream/refs/heads/main/logo.png"
+      alt="App Logo"
+      class="app-logo"
+    />
+    <h1>AllKar Namate</h1>
+    <p>
+      Fast and easy-to-use app for Thai stock (2D/3D) .<br />
+      Get real-time Thai stock data anytime, anywhere.
+    </p>
+    <a
+      href="https://play.google.com/store/apps/details?id=com.miko.codejr"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="liquid-btn"
+      >Download on Google Play</a
+    >
+  </div>
 </body>
 </html>
