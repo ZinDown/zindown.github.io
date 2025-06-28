@@ -1,23 +1,13 @@
 # zindown.github.io
-This is For My Website.
+This update includes a secure WebView implementation for displaying static external content relevant to the app's functionality.
 
-[ 1 ]Main Wensite Test For App Ui
-https://zindown.github.io/
+- The WebView only loads URLs that begin with one of three trusted domains approved for content display
+- A `startsWith()` validation check is implemented to ensure that only safe, expected domains are allowed to load
+- These domains serve static HTML, JavaScript, and CSS content used solely for viewing purposes
+- JavaScript is enabled only within these trusted domains
+- The WebView activity is marked as `android:exported="false"` to prevent external access
+- The app does not request or use sensitive permissions such as camera, file access, or location
+- There is no user input, form submission, or dynamic script execution
+- All displayed content is read-only, non-interactive, and securely sandboxed within the WebView
 
-[ 2 ]For Tools
-https://zindown.github.io/tool.html
-
-[ 3 ]For maynoe iframe Player
-https://zindown.github.io/maynoeplayer.html?url=
-
-[ 4 ] For mediafire Player
-
-https://zindown.github.io/mediafireplayer.html?url=
-
-[ 5 ] For Samusar Player
-
-https://zindown.github.io/samusarplayer.html?url=
-
-[ 6 ] For image view Show
-
-https://zindown.github.io/showimg.html?img=
+This setup follows App Store and Play Store guidelines for secure and policy-compliant WebView usage.
