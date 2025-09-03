@@ -1,129 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>App Download - AllKar Namate</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VModel Video Face Swap</title>
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    background: linear-gradient(135deg, #a8d5ba, #5ca87a);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    padding: 1rem;
-  }
-  .container {
-    max-width: 480px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 2rem 3rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    text-align: center;
-  }
-  img.app-logo {
-    width: 140px;
-    height: 140px;
-    border-radius: 30%;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  }
-  h1 {
-    font-weight: 900;
-    font-size: 2.8rem;
-    margin-bottom: 0.5rem;
-    text-shadow: 0 3px 8px rgba(0,0,0,0.6);
-  }
-  p {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin-bottom: 2.5rem;
-    text-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  }
-
-  /* Bright Green Liquid Button */
-  .liquid-btn {
-    position: relative;
-    display: inline-block;
-    padding: 12px 40px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #fff; /* white text */
-    background: #2ecc40; /* bright green */
-    border-radius: 40px;
-    cursor: pointer;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(46, 204, 64, 0.8);
-    border: none;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    text-decoration: none;
-  }
-  .liquid-btn:hover {
-    background: #27ae38;
-    color: #fff;
-  }
-  .liquid-btn::before,
-  .liquid-btn::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    background: #58d68d;
-    opacity: 0.8;
-    filter: blur(18px);
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-  }
-  .liquid-btn::before {
-    width: 120px;
-    height: 120px;
-    top: -40px;
-    left: -60px;
-    animation-name: blobMove1;
-    animation-duration: 4000ms;
-  }
-  .liquid-btn::after {
-    width: 80px;
-    height: 80px;
-    bottom: -30px;
-    right: -30px;
-    background: #28a745;
-    filter: blur(22px);
-    animation-name: blobMove2;
-    animation-duration: 3500ms;
-  }
-  @keyframes blobMove1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(20px, 15px) scale(1.2); }
-  }
-  @keyframes blobMove2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-20px, -15px) scale(0.8); }
-  }
+body{font-family:Arial;background:#e6f4ea;color:#1a3d2d;margin:0;padding:0;}
+header{background:#2ecc71;color:white;text-align:center;padding:20px;font-size:24px;}
+main{padding:20px;max-width:800px;margin:auto;}
+label{display:block;margin-top:10px;font-weight:bold;}
+input[type="file"],button{margin-top:5px;padding:10px;width:100%;border-radius:5px;border:1px solid #1a3d2d;}
+button{background:#27ae60;color:white;cursor:pointer;}
+button:hover{background:#1e8449;}
+video{display:block;margin:20px auto;max-width:100%;border:2px solid #27ae60;border-radius:10px;}
+pre{background:#f0f0f0;padding:10px;border:1px solid #ccc;overflow:auto;height:200px;}
+.loader{text-align:center;font-weight:bold;margin-top:20px;display:none;}
 </style>
 </head>
 <body>
-  <div class="container">
-    <img
-      src="https://raw.githubusercontent.com/ZinDown/The-Boss-Dream/refs/heads/main/logo.png"
-      alt="App Logo"
-      class="app-logo"
-    />
-    <h1>AllKar Namate</h1>
-    <p>
-      Fast and easy-to-use app for Thai stock (2D/3D) .<br />
-      Get real-time Thai stock data anytime, anywhere.
-    </p>
-    <a
-      href="https://play.google.com/store/apps/details?id=com.miko.codejr"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="liquid-btn"
-      >Download on Google Play</a
-    >
-  </div>
+
+<header>VModel Video Face Swap</header>
+<main>
+<label>Target Face Image:</label>
+<input type="file" id="targetImage" accept="image/*">
+<label>Source Video:</label>
+<input type="file" id="sourceVideo" accept="video/*">
+<button id="swapBtn">Start Face Swap</button>
+<div class="loader" id="loader">Processing… Please wait</div>
+
+<video id="resultVideo" controls></video>
+<a id="downloadBtn" style="display:none;" download="face-swapped.mp4">Download Result</a>
+<pre id="jsonBox"></pre>
+</main>
+
+<script>
+const API_TOKEN = "kLkr9Strw-bxqZAIH09ARH2EYt5LNXHHFaQxquNxi0SJMjfQh0hNp7_uqxmgIh09NGipAkJ4eapDxEUg5jtgXg==";
+
+const swapBtn = document.getElementById("swapBtn");
+const loader = document.getElementById("loader");
+const resultVideo = document.getElementById("resultVideo");
+const downloadBtn = document.getElementById("downloadBtn");
+const jsonBox = document.getElementById("jsonBox");
+
+async function uploadFile(file){
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("https://api.vmodel.ai/api/tasks/v1/upload", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${API_TOKEN}` },
+        body: formData
+    });
+    const data = await res.json();
+    jsonBox.textContent = JSON.stringify(data,null,2);
+    if(!data.file_url) throw new Error("Upload failed: file_url missing");
+    return data.file_url;
+}
+
+async function createTask(targetUrl, sourceUrl){
+    const res = await fetch("https://api.vmodel.ai/api/tasks/v1/create", {
+        method:"POST",
+        headers: {"Authorization": `Bearer ${API_TOKEN}`, "Content-Type":"application/json"},
+        body: JSON.stringify({
+            version: "537e83f7ed84751dc56aa80fb2391b07696c85a49967c72c64f002a0ca2bb224",
+            input: { target: targetUrl, source: sourceUrl, disable_safety_checker:false }
+        })
+    });
+    const data = await res.json();
+    jsonBox.textContent = JSON.stringify(data,null,2);
+    if(!data.id) throw new Error("Create task failed: task ID missing");
+    return data.id;
+}
+
+async function getResult(taskId){
+    while(true){
+        const res = await fetch(`https://api.vmodel.ai/api/tasks/v1/${taskId}`, {
+            headers: {"Authorization": `Bearer ${API_TOKEN}`}
+        });
+        const data = await res.json();
+        jsonBox.textContent = JSON.stringify(data,null,2);
+        if(data.status==="succeeded") return data.output[0];
+        if(data.status==="failed") throw new Error("Face swap failed");
+        await new Promise(r=>setTimeout(r,2000));
+    }
+}
+
+swapBtn.addEventListener("click", async()=>{
+    const targetFile = document.getElementById("targetImage").files[0];
+    const sourceFile = document.getElementById("sourceVideo").files[0];
+    if(!targetFile || !sourceFile) return alert("Select both files");
+
+    loader.style.display="block"; swapBtn.disabled=true;
+    resultVideo.src=""; downloadBtn.style.display="none";
+
+    try{
+        const targetUrl = await uploadFile(targetFile);
+        const sourceUrl = await uploadFile(sourceFile);
+        const taskId = await createTask(targetUrl, sourceUrl);
+        const resultUrl = await getResult(taskId);
+
+        resultVideo.src = resultUrl;
+        downloadBtn.href = resultUrl; downloadBtn.style.display="block";
+    }catch(e){
+        alert("Error: "+e.message);
+    }finally{
+        loader.style.display="none"; swapBtn.disabled=false;
+    }
+});
+</script>
+
 </body>
 </html>
