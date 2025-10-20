@@ -1,113 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VModel Video Face Swap</title>
-<style>
-body{font-family:Arial;background:#e6f4ea;color:#1a3d2d;margin:0;padding:0;}
-header{background:#2ecc71;color:white;text-align:center;padding:20px;font-size:24px;}
-main{padding:20px;max-width:800px;margin:auto;}
-label{display:block;margin-top:10px;font-weight:bold;}
-input[type="file"],button{margin-top:5px;padding:10px;width:100%;border-radius:5px;border:1px solid #1a3d2d;}
-button{background:#27ae60;color:white;cursor:pointer;}
-button:hover{background:#1e8449;}
-video{display:block;margin:20px auto;max-width:100%;border:2px solid #27ae60;border-radius:10px;}
-pre{background:#f0f0f0;padding:10px;border:1px solid #ccc;overflow:auto;height:200px;}
-.loader{text-align:center;font-weight:bold;margin-top:20px;display:none;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Status Controller</title>
+
+  <!-- jQuery + SweetAlert -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(145deg, #74ABE2, #5563DE);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 380px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      padding: 25px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: 0.3s;
+    }
+
+    .btn-check {
+      background: #3498db;
+    }
+    .btn-check:hover {
+      background: #5dade2;
+    }
+
+    .btn-active {
+      background: #27ae60;
+    }
+    .btn-active:hover {
+      background: #2ecc71;
+    }
+
+    .btn-inactive {
+      background: #c0392b;
+    }
+    .btn-inactive:hover {
+      background: #e74c3c;
+    }
+
+    .status-box {
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 12px;
+      font-weight: bold;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .active-text {
+      color: #2ecc71;
+    }
+    .inactive-text {
+      color: #e74c3c;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>👤 User Status Controller</h2>
+    <input type="text" id="username" placeholder="Enter Username...">
+    <button class="btn btn-check" id="btnCheck">🔍 Check Status</button>
+    <button class="btn btn-active" id="btnActive">✅ Set Active</button>
+    <button class="btn btn-inactive" id="btnInactive">🚫 Set Unactive</button>
+    <div class="status-box" id="statusText">Status: Not Checked</div>
+  </div>
 
-<header>VModel Video Face Swap</header>
-<main>
-<label>Target Face Image:</label>
-<input type="file" id="targetImage" accept="image/*">
-<label>Source Video:</label>
-<input type="file" id="sourceVideo" accept="video/*">
-<button id="swapBtn">Start Face Swap</button>
-<div class="loader" id="loader">Processing… Please wait</div>
-
-<video id="resultVideo" controls></video>
-<a id="downloadBtn" style="display:none;" download="face-swapped.mp4">Download Result</a>
-<pre id="jsonBox"></pre>
-</main>
-
-<script>
-const API_TOKEN = "kLkr9Strw-bxqZAIH09ARH2EYt5LNXHHFaQxquNxi0SJMjfQh0hNp7_uqxmgIh09NGipAkJ4eapDxEUg5jtgXg==";
-
-const swapBtn = document.getElementById("swapBtn");
-const loader = document.getElementById("loader");
-const resultVideo = document.getElementById("resultVideo");
-const downloadBtn = document.getElementById("downloadBtn");
-const jsonBox = document.getElementById("jsonBox");
-
-async function uploadFile(file){
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("https://api.vmodel.ai/api/tasks/v1/upload", {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${API_TOKEN}` },
-        body: formData
-    });
-    const data = await res.json();
-    jsonBox.textContent = JSON.stringify(data,null,2);
-    if(!data.file_url) throw new Error("Upload failed: file_url missing");
-    return data.file_url;
-}
-
-async function createTask(targetUrl, sourceUrl){
-    const res = await fetch("https://api.vmodel.ai/api/tasks/v1/create", {
-        method:"POST",
-        headers: {"Authorization": `Bearer ${API_TOKEN}`, "Content-Type":"application/json"},
-        body: JSON.stringify({
-            version: "537e83f7ed84751dc56aa80fb2391b07696c85a49967c72c64f002a0ca2bb224",
-            input: { target: targetUrl, source: sourceUrl, disable_safety_checker:false }
-        })
-    });
-    const data = await res.json();
-    jsonBox.textContent = JSON.stringify(data,null,2);
-    if(!data.id) throw new Error("Create task failed: task ID missing");
-    return data.id;
-}
-
-async function getResult(taskId){
-    while(true){
-        const res = await fetch(`https://api.vmodel.ai/api/tasks/v1/${taskId}`, {
-            headers: {"Authorization": `Bearer ${API_TOKEN}`}
-        });
-        const data = await res.json();
-        jsonBox.textContent = JSON.stringify(data,null,2);
-        if(data.status==="succeeded") return data.output[0];
-        if(data.status==="failed") throw new Error("Face swap failed");
-        await new Promise(r=>setTimeout(r,2000));
+  <script>
+    function getStatus(username) {
+      $("#statusText").text("Loading... ⏳").css("color", "white");
+      $.getJSON(
+        "https://api.allorigins.win/get?url=" + 
+        encodeURIComponent("https://bt6688.net/api/user/get-status?username=" + username),
+        function (response) {
+          try {
+            let data = JSON.parse(response.contents);
+            let status = data.data.status;
+            if (status == "1") {
+              $("#statusText").html("✅ Active ဖြစ်နေပါပြီ").addClass("active-text").removeClass("inactive-text");
+            } else if (status == "0") {
+              $("#statusText").html("🚫 Unactive ဖြစ်နေပါပြီ").addClass("inactive-text").removeClass("active-text");
+            } else {
+              $("#statusText").html("⚠️ Unknown Status").css("color", "yellow");
+            }
+          } catch (err) {
+            swal("Error", "JSON parse မဖြစ်ပါ ❌", "error");
+          }
+        }
+      ).fail(function () {
+        swal("Error", "Network Error!", "error");
+      });
     }
-}
 
-swapBtn.addEventListener("click", async()=>{
-    const targetFile = document.getElementById("targetImage").files[0];
-    const sourceFile = document.getElementById("sourceVideo").files[0];
-    if(!targetFile || !sourceFile) return alert("Select both files");
-
-    loader.style.display="block"; swapBtn.disabled=true;
-    resultVideo.src=""; downloadBtn.style.display="none";
-
-    try{
-        const targetUrl = await uploadFile(targetFile);
-        const sourceUrl = await uploadFile(sourceFile);
-        const taskId = await createTask(targetUrl, sourceUrl);
-        const resultUrl = await getResult(taskId);
-
-        resultVideo.src = resultUrl;
-        downloadBtn.href = resultUrl; downloadBtn.style.display="block";
-    }catch(e){
-        alert("Error: "+e.message);
-    }finally{
-        loader.style.display="none"; swapBtn.disabled=false;
+    function updateStatus(username, value) {
+      $.ajax({
+        type: "POST",
+        url: "https://api.allorigins.win/get?url=" + encodeURIComponent("https://bt6688.net/api/user/update-status"),
+        data: { username: username, status: value },
+        success: function () {
+          swal("Success ✅", "Status update ဖြစ်ပြီးပါပြီ!", "success");
+          getStatus(username);
+        },
+        error: function () {
+          swal("Error ❌", "Update မအောင်မြင်ပါ!", "error");
+        }
+      });
     }
-});
-</script>
 
+    $("#btnCheck").click(function () {
+      let username = $("#username").val().trim();
+      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
+      getStatus(username);
+    });
+
+    $("#btnActive").click(function () {
+      let username = $("#username").val().trim();
+      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
+      updateStatus(username, 1);
+    });
+
+    $("#btnInactive").click(function () {
+      let username = $("#username").val().trim();
+      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
+      updateStatus(username, 0);
+    });
+  </script>
 </body>
 </html>
