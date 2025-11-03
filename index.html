@@ -2,169 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>User Status Controller</title>
-
-  <!-- jQuery + SweetAlert -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
+  <title>XSS Demo (Safe vs Unsafe)</title>
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(145deg, #74ABE2, #5563DE);
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #fff;
-    }
-
-    .container {
-      width: 90%;
-      max-width: 380px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      padding: 25px;
-      text-align: center;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin-bottom: 15px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      outline: none;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      color: white;
-      cursor: pointer;
-      margin-bottom: 10px;
-      transition: 0.3s;
-    }
-
-    .btn-check {
-      background: #3498db;
-    }
-    .btn-check:hover {
-      background: #5dade2;
-    }
-
-    .btn-active {
-      background: #27ae60;
-    }
-    .btn-active:hover {
-      background: #2ecc71;
-    }
-
-    .btn-inactive {
-      background: #c0392b;
-    }
-    .btn-inactive:hover {
-      background: #e74c3c;
-    }
-
-    .status-box {
-      margin-top: 15px;
-      padding: 15px;
-      border-radius: 12px;
-      font-weight: bold;
-      background: rgba(0, 0, 0, 0.2);
-    }
-
-    .active-text {
-      color: #2ecc71;
-    }
-    .inactive-text {
-      color: #e74c3c;
-    }
+    body { font-family: sans-serif; padding: 2em; background: #f6f6f6; }
+    h2 { color: #333; }
+    .box { background: white; padding: 1em; margin-top: 1em; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+    input { padding: 6px; width: 80%; }
+    button { padding: 6px 12px; margin-left: 6px; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>👤 User Status Controller</h2>
-    <input type="text" id="username" placeholder="Enter Username...">
-    <button class="btn btn-check" id="btnCheck">🔍 Check Status</button>
-    <button class="btn btn-active" id="btnActive">✅ Set Active</button>
-    <button class="btn btn-inactive" id="btnInactive">🚫 Set Unactive</button>
-    <div class="status-box" id="statusText">Status: Not Checked</div>
+  <h1>🧠 XSS Demo (Safe vs Unsafe)</h1>
+  <p>Try typing something like: <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code></p>
+
+  <div class="box">
+    <h2>❌ Unsafe Version</h2>
+    <input id="badInput" placeholder="Type here...">
+    <button onclick="showBad()">Show</button>
+    <p id="badOutput"></p>
+  </div>
+
+  <div class="box">
+    <h2>✅ Safe Version (Sanitized)</h2>
+    <input id="safeInput" placeholder="Type here...">
+    <button onclick="showSafe()">Show</button>
+    <p id="safeOutput"></p>
   </div>
 
   <script>
-    function getStatus(username) {
-      $("#statusText").text("Loading... ⏳").css("color", "white");
-      $.getJSON(
-        "https://api.allorigins.win/get?url=" + 
-        encodeURIComponent("https://bt6688.net/api/user/get-status?username=" + username),
-        function (response) {
-          try {
-            let data = JSON.parse(response.contents);
-            let status = data.data.status;
-            if (status == "1") {
-              $("#statusText").html("✅ Active ဖြစ်နေပါပြီ").addClass("active-text").removeClass("inactive-text");
-            } else if (status == "0") {
-              $("#statusText").html("🚫 Unactive ဖြစ်နေပါပြီ").addClass("inactive-text").removeClass("active-text");
-            } else {
-              $("#statusText").html("⚠️ Unknown Status").css("color", "yellow");
-            }
-          } catch (err) {
-            swal("Error", "JSON parse မဖြစ်ပါ ❌", "error");
-          }
-        }
-      ).fail(function () {
-        swal("Error", "Network Error!", "error");
-      });
+    // ❌ UNSAFE: Directly injects HTML
+    function showBad() {
+      const input = document.getElementById('badInput').value;
+      document.getElementById('badOutput').innerHTML = input; // vulnerable
     }
 
-    function updateStatus(username, value) {
-      $.ajax({
-        type: "POST",
-        url: "https://api.allorigins.win/get?url=" + encodeURIComponent("https://bt6688.net/api/user/update-status"),
-        data: { username: username, status: value },
-        success: function () {
-          swal("Success ✅", "Status update ဖြစ်ပြီးပါပြီ!", "success");
-          getStatus(username);
-        },
-        error: function () {
-          swal("Error ❌", "Update မအောင်မြင်ပါ!", "error");
-        }
-      });
+    // ✅ SAFE: Uses textContent to prevent script execution
+    function showSafe() {
+      const input = document.getElementById('safeInput').value;
+      document.getElementById('safeOutput').textContent = input; // safe
     }
-
-    $("#btnCheck").click(function () {
-      let username = $("#username").val().trim();
-      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
-      getStatus(username);
-    });
-
-    $("#btnActive").click(function () {
-      let username = $("#username").val().trim();
-      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
-      updateStatus(username, 1);
-    });
-
-    $("#btnInactive").click(function () {
-      let username = $("#username").val().trim();
-      if (!username) return swal("Warning ⚠️", "Username ထည့်ပါ!", "warning");
-      updateStatus(username, 0);
-    });
   </script>
 </body>
 </html>
