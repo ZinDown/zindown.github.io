@@ -1,46 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>XSS Demo (Safe vs Unsafe)</title>
-  <style>
-    body { font-family: sans-serif; padding: 2em; background: #f6f6f6; }
-    h2 { color: #333; }
-    .box { background: white; padding: 1em; margin-top: 1em; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
-    input { padding: 6px; width: 80%; }
-    button { padding: 6px 12px; margin-left: 6px; }
-  </style>
-</head>
-<body>
-  <h1>🧠 XSS Demo (Safe vs Unsafe)</h1>
-  <p>Try typing something like: <code>&lt;script&gt;alert('XSS!')&lt;/script&gt;</code></p>
-
-  <div class="box">
-    <h2>❌ Unsafe Version</h2>
-    <input id="badInput" placeholder="Type here...">
-    <button onclick="showBad()">Show</button>
-    <p id="badOutput"></p>
-  </div>
-
-  <div class="box">
-    <h2>✅ Safe Version (Sanitized)</h2>
-    <input id="safeInput" placeholder="Type here...">
-    <button onclick="showSafe()">Show</button>
-    <p id="safeOutput"></p>
-  </div>
-
-  <script>
-    // ❌ UNSAFE: Directly injects HTML
-    function showBad() {
-      const input = document.getElementById('badInput').value;
-      document.getElementById('badOutput').innerHTML = input; // vulnerable
-    }
-
-    // ✅ SAFE: Uses textContent to prevent script execution
-    function showSafe() {
-      const input = document.getElementById('safeInput').value;
-      document.getElementById('safeOutput').textContent = input; // safe
-    }
-  </script>
-</body>
-</html>
+<iframe 
+    src="https://green-star-b48b.zindown88.workers.dev/"
+    width="100%"
+    height="100%"
+    style="border:none;">
+</iframe>
