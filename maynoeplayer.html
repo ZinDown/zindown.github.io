@@ -113,7 +113,7 @@
     }
 
     async function scrapeVideoLink(link) {
-        const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(link);
+        const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(link);
         try {
             const response = await fetch(proxyUrl);
             const data = await response.json();
