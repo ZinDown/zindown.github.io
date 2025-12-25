@@ -106,7 +106,7 @@
 
   <script>
     async function scrapePage(url) {
-      const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(url);
+      const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url);
       try {
         const response = await fetch(proxyUrl);
         const data = await response.json();
