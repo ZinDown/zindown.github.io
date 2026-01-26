@@ -1,102 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Player</title>
-  <style>
-    /* Ensure iframe adjusts according to the screen size */
-    .iframe-container {
-      width: 100%;
-      max-width: 476px;
-      height: 0;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
-      position: relative;
-      margin: 0 auto;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Full Player</title>
+    <style>
+        /* တစ်မျက်နှာလုံး အပြည့်ဖြစ်စေရန် */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
 
-    .iframe-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Style for the images */
-    .image-container {
-      text-align: center;
-      margin-top: 20px; /* Add top margin here */
-    }
-
-    .image-container img {
-      height: auto;
-    }
-
-    /* Image above the iframe (100% width) */
-    .image-container img:first-of-type {
-      max-width: 100%;  /* Set max-width to 100% for the first image */
-    }
-
-    /* Image below the iframe (80% width) */
-    .image-container img:last-of-type {
-      max-width: 80%;  /* Set max-width to 80% for the second image */
-    }
-    . h1 {
-      font-size: 40px;
-      font-weight: bold;
-      margin-bottom: 20px;
-      color: #ffffff;
-      }
-  </style>
+        /* Iframe ကို မျက်နှာပြင်အပြည့် ချဲ့ခြင်း */
+        #myIframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
 
-<div style="display: flex; justify-content: center; align-items: center; height: 100vh; flex-direction: column;">
-    	    <h1> .................</h1>
-      <h1> .................</h1>
-          <h1> .................</h1>
-  <!-- Image above the iframe -->
-  <div class="image-container">
-    <img src="https://i.ibb.co/xMKVn1C/click.jpg" alt="Image above video">
-  </div>
+    <iframe 
+        id="myIframe" 
+        src="" 
+        allow="autoplay; fullscreen" 
+        allowfullscreen>
+    </iframe>
 
-  <div class="iframe-container">
-    <!-- Empty iframe initially -->
-    <iframe id="videoIframe" src="" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
-  </div>
+    <script>
+        // လက်ရှိ URL (ဥပမာ- player.html?url=https://bcb.cc/mm.mp4) ကနေ
+        // parameter ကို ခွဲထုတ်ခြင်း
+        const urlParams = new URLSearchParams(window.location.search);
+        const videoUrl = urlParams.get('url');
 
-  <!-- Image below the iframe -->
-  <div class="image-container">
-    <img src="https://i.ibb.co/9ZsS1LP/20241227-083406.jpg" alt="Image below video">
-  </div>
-
-</div>
-
-<script>
-  // Function to get the video link based on the query string
-  function getVideoLinkFromQuery() {
-    const urlParams = new URLSearchParams(window.location.search); // Get query string parameters
-    const videoUrl = urlParams.get('url'); // Fetch the 'url' parameter
-    if (videoUrl) {
-      return videoUrl; // Return the video URL if it exists
-    }
-    return null; // Return null if no 'url' parameter exists
-  }
-
-  // Set the iframe src dynamically
-  function setVideoLink() {
-    const videoLink = getVideoLinkFromQuery();
-    if (videoLink) {
-      document.getElementById("videoIframe").src = videoLink; // Update iframe src with the video URL
-    } else {
-      console.error("No video URL found in the query string");
-    }
-  }
-
-  // Run the function to set the video link when the page loads
-  window.onload = setVideoLink;
-</script>
+        // အကယ်၍ URL မှာ video link ပါလာရင် iframe ရဲ့ src ထဲ ထည့်မယ်
+        if (videoUrl) {
+            document.getElementById('myIframe').src = videoUrl;
+        } else {
+            // Link မပါလာခဲ့ရင် default အနေနဲ့ သင်ပေးထားတဲ့ link ကို သုံးမယ်
+            document.getElementById('myIframe').src = "https";
+        }
+    </script>
 
 </body>
 </html>
